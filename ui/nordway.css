@@ -200,9 +200,8 @@ dialog h3 {
   grid-row: 1;
   width: 24px;
   height: 22px;
-  background: var(--text);
-  -webkit-mask: url("sceau.png") center / contain no-repeat;
-  mask: url("sceau.png") center / contain no-repeat;
+  /* une image et non un masque CSS : un masque est bloqué quand la page est ouverte en double-clic (file://) */
+  background: url("sceau-ink.png") center / contain no-repeat;
 }
 .badge { padding: 0; border: none; }
 .backLink {
@@ -228,6 +227,19 @@ dialog h3 {
   fill: currentColor;
   stroke: none;
 }
+/* ouvert en double-clic (nordway.js) : un bandeau Encre, le carré Signal en tête */
+.fileNotice {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 8px 10px;
+  font-size: var(--fs-small);
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--paper);
+  background: var(--encre);
+}
+.fileNotice::before { content: ""; flex: none; width: 7px; height: 7px; margin-top: 4px; background: var(--signal); }
 .visuallyHidden {
   position: absolute;
   width: 1px;

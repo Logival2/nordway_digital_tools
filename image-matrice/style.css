@@ -134,6 +134,7 @@ body.panel-hidden #panel {
   --line: #0a0a0a;
   --dash: #bdbdba;
 }
+:root.dark #panelHead .eyebrow::after { background-image: url("../ui/sceau-paper.png"); }
 :root.dark #handCursor { border-color: #f4f4f4; }
 :root.dark #handCursor.grab { border-color: #0a0a0a; }
 :root.dark #arrowHint { color: #f4f4f4; }

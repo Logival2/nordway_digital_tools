@@ -61,15 +61,13 @@ p { margin: 0; max-width: 62ch; }
   text-wrap: balance;
 }
 
-/* marques : le wordmark et le sceau, noirs sur transparent, colorés par masque */
-.mark {
-  display: block;
-  background: currentColor;
-  -webkit-mask: var(--src) center / contain no-repeat;
-  mask: var(--src) center / contain no-repeat;
-}
-.mark.word { --src: url("wordmark.png"); aspect-ratio: 1461 / 335; }
-.mark.seal { --src: url("sceau.png"); aspect-ratio: 491 / 518; }
+/* marques : le wordmark et le sceau, en images Encre, Papier ou Signal
+   (pas de masque CSS : il serait bloqué quand la page est ouverte en double-clic, file://) */
+.mark { display: block; background: url("wordmark-ink.png") center / contain no-repeat; }
+.mark.word { aspect-ratio: 1461 / 335; }
+.mark.seal { aspect-ratio: 491 / 518; background-image: url("sceau-ink.png"); }
+.mark.word.signal { background-image: url("wordmark-signal.png"); }
+.mark.word.paper { background-image: url("wordmark-paper.png"); }
 
 /* ── barre haute : retour / sceau / méta, filet 2 px dessous ── */
 .top {
@@ -117,7 +115,7 @@ p { margin: 0; max-width: 62ch; }
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
-.coord .word { height: 13px; width: auto; color: var(--signal); }
+.coord .word { height: 13px; width: 57px; background-image: url("wordmark-signal.png"); }
 .coord span:last-child { justify-self: end; font-variant-numeric: tabular-nums; }
 @media (max-width: 560px) { .coord { grid-template-columns: minmax(0, 1fr); gap: 6px; } .coord span:last-child { justify-self: start; } }
 

@@ -394,6 +394,18 @@
   }
   if (crops.length) paintCrops();
 
+  // ── Ouvert en double-clic (file://) : le navigateur bloque le chargement des fichiers de l'outil
+  //    (relief, Brand images, export). Une ligne sous le titre renvoie vers le lanceur. ──
+  if (location.protocol === "file:") {
+    const head = document.getElementById("panelHead");
+    if (head) {
+      const p = document.createElement("p");
+      p.className = "fileNotice";
+      p.textContent = "Opened as a file: some features are blocked. Use “Ouvrir NORDWAY Tools.bat”.";
+      head.append(p);
+    }
+  }
+
   // ── Fenêtres : un clic sur le fond assombri ferme le volet ──
   for (const dialog of document.querySelectorAll("dialog")) {
     dialog.addEventListener("click", (e) => {
