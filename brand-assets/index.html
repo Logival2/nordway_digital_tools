@@ -68,9 +68,10 @@
     transition: outline-color 0.12s;
   }
   .tile:hover .frame { outline: 2px solid var(--line); outline-offset: -2px; }
-  .tile img, .tile video { width: 100%; height: 100%; object-fit: cover; }
-  .tile.contain img { object-fit: contain; padding: 14%; }
-  .tile.contain .frame { background: var(--white); }
+  /* l'image entière, jamais recadrée : ce qui n'est pas en 4:5 garde du blanc autour */
+  .tile .frame { background: var(--white); }
+  .tile img, .tile video { width: 100%; height: 100%; object-fit: contain; }
+  .tile.contain img { padding: 14%; }
   /* repère de visée au survol : quatre coins Signal sur Encre */
   .tile .frame::after {
     content: "";

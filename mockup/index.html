@@ -28,6 +28,8 @@
     <div class="btnRow">
       <button id="fileBtn" class="primary" type="button">Import an image or a video</button>
     </div>
+    <!-- une image ou une vidéo de la bibliothèque NORDWAY, en fichier original (sélecteur commun, nordway.js) -->
+    <button id="pickAssetsBtn" type="button" data-brand-assets="fileInput" data-kinds="image,video">From brand assets</button>
     <input id="fileInput" type="file" accept="image/*,video/*,.mp4,.m4v,.mov,.webm,.mkv,.ogv" hidden />
     <p class="hint" id="fileInfo" hidden></p>
     <div class="row">
@@ -200,8 +202,9 @@ let photo = null;
     .catch((err) => console.error("Could not load the mockup photo:", err));
 }
 
-// ── Ce qu'on met dans l'écran : une image ou une vidéo ; au départ, une image haute (856 × 1838) ──
-const DEFAULT_CONTENT = `images sources/${encodeURIComponent("Randonneur thermique face aux montagnes enneigées.png")}`;
+// ── Ce qu'on met dans l'écran : une image ou une vidéo ; au départ, la maquette UX NORDWAY,
+//    une page haute (1080 × 2799) à faire défiler avec Scroll ──
+const DEFAULT_CONTENT = `images sources/${encodeURIComponent("NORDWAY — A2 · Full bleed spec sheet — V2.png")}`;
 let content = { el: null, w: 0, h: 0, video: false };
 let contentUrl = null;   // adresse du fichier importé, libérée quand on le remplace
 {

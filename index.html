@@ -29,6 +29,8 @@
   #seal .no { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; fill: var(--mute); }
   #seal .nm { font-family: var(--display); font-size: 24px; letter-spacing: -0.03em; fill: var(--ink); text-transform: uppercase; }
   #seal .node.on .pin { fill: var(--signal); }
+  /* la bibliothèque n'est pas un outil : un point plein (les relais du sceau) au lieu d'une case */
+  #seal .pin.lib { fill: var(--ink); }
   #seal .node.on .no { fill: var(--ink); }
   #seal .node.on .nm { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
   #seal .node:focus-visible .pin { stroke: var(--signal); stroke-width: 3; }
@@ -66,6 +68,8 @@
   .list a:hover, .list a.on { background: var(--white); padding-inline: 12px; }
   .list .n { font-family: var(--mono); font-size: 13px; }
   .list .name { font-size: clamp(26px, 2.6vw, 36px); line-height: 1; letter-spacing: -0.03em; text-transform: uppercase; }
+  /* la bibliothèque, à part : un intervalle et son intitulé sous la liste des outils */
+  .list .sep { margin-top: 40px; padding-bottom: 8px; border-bottom: 2px solid var(--line); }
   .list .thumb { width: 44px; aspect-ratio: 4 / 5; object-fit: cover; background: var(--panel); }
   @media (max-width: 640px) { .list a { grid-template-columns: 36px minmax(0, 1fr) 40px; } .list .out, .list .go { display: none; } .list .thumb { width: 40px; } }
 
@@ -99,11 +103,11 @@
       <div class="f-top label"><span id="fKind"></span><span id="fNum"></span></div>
       <h2 class="xxl" id="fName"></h2>
       <div class="f-body">
-        <div class="shot"><img id="fImg" src="apercu/image-matrice.jpg" alt="Image matrice, example output" /></div>
+        <div class="shot"><img id="fImg" src="apercu/card-ring.jpg" alt="Card ring, example output" /></div>
         <div class="f-text">
           <p class="desc" id="fDesc"></p>
           <dl class="spec" id="fSpec"></dl>
-          <a class="cta" id="fGo"><span class="lead"><span class="dot"></span><span>Open</span></span><span>→</span></a>
+          <a class="cta" id="fGo"><span class="lead"><span class="dot"></span><span id="fGoLabel">Open</span></span><span>→</span></a>
         </div>
       </div>
     </article>
@@ -129,14 +133,16 @@
 // Un outil de plus : une entrée dans TOOLS (dossier, nom, aperçu 4:5 dans apercu/<dossier>.jpg).
 // Le sceau a six points ; au-delà, la liste reste la référence.
 const TOOLS = [
+  { dossier: "card-ring", nom: "Card ring", kind: "Poster", desc: "A full-width title and a ring of brand images, turned by your hand.", out: "PNG · MP4", fmt: "4:5 · 9:16 · 1:1 · A4" },
   { dossier: "image-matrice", nom: "Image matrice", kind: "Viewer", desc: "The brand images as a 2D index, a sphere, a roll, a space or the Mont Blanc.", out: "Live view", fmt: "Full screen" },
   { dossier: "cairn-generator", nom: "Cairn generator", kind: "Loop", desc: "A pile of stones turning in a perfect loop, under a type layer.", out: "PNG · MP4", fmt: "4:5 · 9:16 · 1:1 · A4" },
   { dossier: "gradient-body", nom: "Gradient body", kind: "Camera", desc: "Your silhouette leaves a grainy aura, tagged in Signal green.", out: "Live view", fmt: "Full screen" },
   { dossier: "mockup", nom: "Mockup", kind: "Mockup", desc: "Your image or screen recording in a phone held in silhouette.", out: "PNG · MP4", fmt: "4:5 · 9:16 · 1:1 · A4" },
-  { dossier: "card-ring", nom: "Card ring", kind: "Poster", desc: "A full-width title and a ring of brand images, turned by your hand.", out: "PNG · MP4", fmt: "4:5 · 9:16 · 1:1 · A4" },
-  { dossier: "brand-assets", nom: "Brand assets", kind: "Library", desc: "Every file of the identity, sorted as in the ASSETS folder.", out: "Original files", fmt: "PNG · JPG · MP4 · TTF" },
+  { dossier: "brand-assets", nom: "Brand assets", kind: "Library", lib: true, desc: "Every file of the identity, sorted as in the ASSETS folder.", out: "Original files", fmt: "PNG · JPG · MP4 · TTF" },
 ];
 const pad2 = (n) => String(n).padStart(2, "0");
+const N_TOOLS = TOOLS.filter((t) => !t.lib).length;
+const numOf = (i) => (TOOLS[i].lib ? "LIB" : pad2(i + 1));   // la bibliothèque n'a pas de numéro d'outil
 const $ = (id) => document.getElementById(id);
 
 // ── le sceau : cercle, triangle inscrit, trois axes fléchés, trois points de relais ──
@@ -182,17 +188,18 @@ el("circle", { cx: 0, cy: 0, r: 5, class: "center" });
 
 const nodes = TOOLS.map((t, i) => {
   const a = ANG[i];
-  const g = el("a", { class: "node", href: `${t.dossier}/`, "aria-label": `${pad2(i + 1)} ${t.nom}` });
+  const g = el("a", { class: "node", href: `${t.dossier}/`, "aria-label": `${numOf(i)} ${t.nom}` });
   const [x, y] = P(a);
   el("circle", { class: "hit", cx: x, cy: y, r: 34 }, g);
-  el("rect", { class: "pin", x: x - 7, y: y - 7, width: 14, height: 14 }, g);
+  if (t.lib) el("circle", { class: "pin lib", cx: x, cy: y, r: 9 }, g);
+  else el("rect", { class: "pin", x: x - 7, y: y - 7, width: 14, height: 14 }, g);
   let [lx, ly] = P(a, IS_VERTEX[i] ? R + TIP + 30 : R + 30);
   const cos = Math.cos(a * Math.PI / 180);
   const anchor = Math.abs(cos) < 0.2 ? "middle" : cos > 0 ? "start" : "end";
   if (a === -90) ly -= 24;
   if (a === 90) ly += 30;
   const words = t.nom.split(" ");
-  el("text", { class: "no", x: lx, y: ly - (words.length > 1 ? 26 : 22), "text-anchor": anchor }, g).textContent = pad2(i + 1);
+  el("text", { class: "no", x: lx, y: ly - (words.length > 1 ? 26 : 22), "text-anchor": anchor }, g).textContent = numOf(i);
   words.forEach((w, k) => { el("text", { class: "nm", x: lx, y: ly + k * 22, "text-anchor": anchor }, g).textContent = w; });
   g.addEventListener("pointerenter", () => select(i));
   g.addEventListener("focus", () => select(i));
@@ -201,11 +208,17 @@ const nodes = TOOLS.map((t, i) => {
 
 // ── la liste : survoler une ligne vise aussi le point du sceau ──
 const rows = TOOLS.map((t, i) => {
+  if (t.lib) {
+    const sep = document.createElement("li");
+    sep.className = "sep label ink";
+    sep.textContent = "Library";
+    $("list").append(sep);
+  }
   const li = document.createElement("li");
   li.innerHTML = `<a><span class="n"></span><span class="name"></span><span class="out label"></span><img class="thumb" alt="" loading="lazy" /><span class="go mono">→</span></a>`;
   const a = li.firstChild;
   a.href = `${t.dossier}/`;
-  a.querySelector(".n").textContent = pad2(i + 1);
+  a.querySelector(".n").textContent = numOf(i);
   a.querySelector(".name").textContent = t.nom;
   a.querySelector(".out").textContent = t.out;
   a.querySelector(".thumb").src = `apercu/${t.dossier}.jpg`;
@@ -226,7 +239,7 @@ function select(i) {
   laser.setAttribute("x1", x); laser.setAttribute("y1", y);
   laser.classList.remove("draw"); void laser.getBBox(); laser.classList.add("draw");
   $("fKind").textContent = t.kind;
-  $("fNum").textContent = `${pad2(i + 1)} / ${pad2(TOOLS.length)}`;
+  $("fNum").textContent = t.lib ? "" : `${pad2(i + 1)} / ${pad2(N_TOOLS)}`;
   $("fName").textContent = t.nom;
   $("fDesc").textContent = t.desc;
   $("fImg").src = `apercu/${t.dossier}.jpg`;
@@ -239,6 +252,7 @@ function select(i) {
     return d;
   }));
   $("fGo").href = `${t.dossier}/`;
+  $("fGoLabel").textContent = t.lib ? "Open library" : "Open";
   const f = $("fiche");
   f.classList.remove("swap"); void f.offsetWidth; f.classList.add("swap");
 }

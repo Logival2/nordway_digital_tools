@@ -462,3 +462,192 @@ window.drawCameraPreview = (() => {
     ctx.restore();
   };
 })();
+
+// ── Brand assets : importer directement depuis la bibliothèque NORDWAY (../brand-assets) ──
+// Dans un outil : <button data-brand-assets="imageInput" data-kinds="image" data-multiple data-quality="web">.
+// Le bouton ouvre un sélecteur ; les fichiers choisis sont téléchargés puis posés dans le champ <input type="file">
+// visé, qui reçoit un « change » : l'outil les importe exactement comme s'ils venaient de l'ordinateur.
+// data-kinds : image, video (séparés par une virgule) · data-multiple : plusieurs fichiers ·
+// data-quality : « web » (copies légères de la bibliothèque) ou « original » (fichier source, par défaut).
+(() => {
+  const buttons = document.querySelectorAll("[data-brand-assets]");
+  if (!buttons.length) return;
+  const BASE = new URL("../brand-assets/", document.currentScript?.src || location.href);
+  let manifest = null;
+  const loadManifest = () => manifest || (manifest = new Promise((resolve, reject) => {
+    if (window.NORDWAY_ASSETS) return resolve(window.NORDWAY_ASSETS);
+    const s = document.createElement("script");
+    s.src = new URL("assets.js", BASE).href;
+    s.onload = () => resolve(window.NORDWAY_ASSETS || []);
+    s.onerror = () => { manifest = null; reject(new Error("Brand assets manifest unavailable")); };
+    document.head.append(s);
+  }));
+  // les chemins viennent du système de fichiers (espaces, accents) : chaque segment est encodé
+  const abs = (p) => new URL(p.split("/").map((s) => (s === ".." ? s : encodeURIComponent(s))).join("/"), BASE).href;
+
+  // ── la fenêtre, construite une fois ──
+  const dlg = document.createElement("dialog");
+  dlg.className = "nwPicker";
+  dlg.setAttribute("aria-labelledby", "nwPickerTitle");
+  dlg.innerHTML = `
+    <header class="nwpHead">
+      <span id="nwPickerTitle">Brand assets</span>
+      <div class="pills nwpFilters" role="group" aria-label="Folder"></div>
+      <button type="button" class="nwpClose">Close · Esc</button>
+    </header>
+    <div class="nwpGrid" role="listbox" aria-labelledby="nwPickerTitle"></div>
+    <footer class="nwpFoot">
+      <span class="nwpInfo"></span>
+      <button type="button" class="nwpAll">Select all</button>
+      <button type="button" class="nwpGo">Import</button>
+    </footer>`;
+  document.body.append(dlg);
+  const $q = (s) => dlg.querySelector(s);
+  const grid = $q(".nwpGrid"), filters = $q(".nwpFilters"), info = $q(".nwpInfo"), go = $q(".nwpGo"), all = $q(".nwpAll");
+  $q(".nwpClose").addEventListener("click", () => dlg.close());
+  dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+
+  let opts = null, picked = [], tiles = [];
+  const label = () => {
+    info.textContent = opts.multiple
+      ? (picked.length ? `${picked.length} selected` : "Click files to select them")
+      : "Click a file to import it";
+    go.disabled = !picked.length;
+    go.hidden = all.hidden = !opts.multiple;
+  };
+
+  async function open(o) {
+    opts = o;
+    picked = [];
+    let groups;
+    try { groups = await loadManifest(); }
+    catch { alert("The brand library could not be loaded. Open the tools through a web server (Ouvrir NORDWAY Tools.bat)."); return; }
+    groups = groups
+      .map((g) => ({ ...g, items: g.items.filter((it) => o.kinds.includes(it.kind)) }))
+      .filter((g) => g.items.length);
+    tiles = [];
+    grid.replaceChildren();
+    filters.replaceChildren();
+    const show = (id) => {
+      for (const b of filters.children) b.setAttribute("aria-pressed", String(b.dataset.id === id));
+      for (const t of tiles) t.hidden = id !== "all" && t.dataset.group !== id;
+      grid.scrollTop = 0;
+    };
+    const fbtn = (id, text) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.dataset.id = id;
+      b.textContent = text;
+      b.addEventListener("click", () => show(id));
+      filters.append(b);
+    };
+    if (groups.length > 1) fbtn("all", "All");
+    for (const g of groups) {
+      fbtn(g.id, g.label);
+      for (const it of g.items) {
+        const t = document.createElement("button");
+        t.type = "button";
+        t.className = "nwpTile";
+        t.dataset.group = g.id;
+        t.setAttribute("role", "option");
+        t.setAttribute("aria-selected", "false");
+        const frame = document.createElement("span");
+        frame.className = "nwpFrame";
+        if (it.kind === "video") {
+          const v = document.createElement("video");
+          v.muted = true; v.loop = true; v.playsInline = true; v.preload = "metadata";
+          v.src = abs(it.src) + "#t=0.5";
+          t.addEventListener("pointerenter", () => v.play().catch(() => {}));
+          t.addEventListener("pointerleave", () => v.pause());
+          frame.append(v);
+        } else {
+          const img = document.createElement("img");
+          img.loading = "lazy";
+          img.alt = "";
+          img.src = abs(it.thumb);
+          if (g.id === "logo" || it.alpha) frame.classList.add("contain");
+          frame.append(img);
+        }
+        const num = document.createElement("span");
+        num.className = "nwpNum";
+        frame.append(num);
+        const cap = document.createElement("span");
+        cap.className = "nwpCap";
+        cap.textContent = it.name;
+        t.append(frame, cap);
+        t.addEventListener("click", () => {
+          if (!opts.multiple) { picked = [it]; finish(); return; }
+          const k = picked.indexOf(it);
+          if (k >= 0) picked.splice(k, 1); else picked.push(it);
+          paint();
+        });
+        t._item = it;
+        tiles.push(t);
+        grid.append(t);
+      }
+    }
+    show(groups.length > 1 ? "all" : groups[0]?.id);
+    paint();
+    dlg.showModal();
+  }
+  // numéro d'ordre sur chaque fichier choisi : c'est l'ordre d'import
+  function paint() {
+    for (const t of tiles) {
+      const k = picked.indexOf(t._item);
+      t.setAttribute("aria-selected", String(k >= 0));
+      t.querySelector(".nwpNum").textContent = k >= 0 ? String(k + 1).padStart(2, "0") : "";
+    }
+    label();
+  }
+  all.addEventListener("click", () => {
+    const visible = tiles.filter((t) => !t.hidden).map((t) => t._item);
+    const allOn = visible.every((it) => picked.includes(it));
+    picked = allOn ? picked.filter((it) => !visible.includes(it)) : picked.concat(visible.filter((it) => !picked.includes(it)));
+    paint();
+  });
+  go.addEventListener("click", finish);
+
+  async function finish() {
+    if (!picked.length) return;
+    const list = picked.slice();
+    go.disabled = all.disabled = true;
+    let done = 0;
+    info.textContent = `Loading 0/${list.length}`;
+    try {
+      const files = await Promise.all(list.map(async (it) => {
+        const useWeb = opts.quality === "web" && it.kind === "image" && it.web;
+        const res = await fetch(abs(useWeb ? it.web : it.src));
+        if (!res.ok) throw new Error(`${it.file}: ${res.status}`);
+        const blob = await res.blob();
+        info.textContent = `Loading ${++done}/${list.length}`;
+        const ext = useWeb ? "webp" : it.ext.toLowerCase();
+        const type = blob.type && blob.type !== "application/octet-stream" ? blob.type
+          : it.kind === "video" ? "video/mp4" : `image/${ext === "jpg" ? "jpeg" : ext}`;
+        return new File([blob], `${it.name}.${ext}`, { type });
+      }));
+      const dt = new DataTransfer();
+      files.forEach((f) => dt.items.add(f));
+      opts.input.files = dt.files;
+      dlg.close();
+      opts.input.dispatchEvent(new Event("change", { bubbles: true }));
+    } catch (err) {
+      console.error("Brand assets import failed:", err);
+      info.textContent = "Import failed (open the tools through a web server).";
+    } finally {
+      go.disabled = all.disabled = false;
+    }
+  }
+
+  for (const b of buttons) {
+    b.addEventListener("click", () => {
+      const input = document.getElementById(b.dataset.brandAssets);
+      if (!input) return;
+      open({
+        input,
+        kinds: (b.dataset.kinds || "image").split(",").map((s) => s.trim()),
+        multiple: b.hasAttribute("data-multiple"),
+        quality: b.dataset.quality || "original",
+      });
+    });
+  }
+})();
