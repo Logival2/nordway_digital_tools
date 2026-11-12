@@ -291,6 +291,7 @@ let mode = DEFAULT_MODE;
 function setMode(next) {
   const captionsChange = (mode === "terrain") !== (next === "terrain");
   mode = next;
+  if (mode === "terrain") ensureTerrain(); // relief pas encore construit (différé au démarrage) : tout de suite
   if (captionsChange) buildAtlas(); // au-dessus du relief, la légende dit aussi le lieu
   modeButtons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
   $("facingRow").hidden = mode !== "sphere" && mode !== "roll";
@@ -636,6 +637,7 @@ const Y_BASE = 2.2;          // km : altitude qui passe par le centre de rotatio
 const TERRAIN_SCALE = 0.8;   // taille des cartes au-dessus du relief (une carte haute de 800 m)
 const TERRAIN_EXAG = 1.6;    // relief exagéré, comme sur les cartes en 3D : à l'échelle réelle il paraît plat
 let dem = null;              // Int16Array, lignes du nord au sud
+let terrainBuilt = false;    // courbes et relief construits (différés au démarrage : ensureTerrain)
 const DEFAULT_RELIEF = "lidar";
 let relief = DEFAULT_RELIEF; // dessin du relief : courbes de niveau, surface lissée, nuage de points
 function setRelief(next) {
@@ -1421,12 +1423,19 @@ fetch("data/montblanc_dem.bin")
   .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(r.status))))
   .then((buf) => {
     dem = new Int16Array(buf);
-    buildContours();
-    buildRelief();
     terrainSpotsCache = null; // les places suivent maintenant le vrai relief
-    if (mode === "terrain") buildAtlas();
+    // courbes et relief (~150 ms de calcul) : seulement quand on entre dans le mode Mont Blanc (setMode).
+    // En ligne, le fichier arrivait pendant l'animation d'ouverture et ce calcul la faisait saccader.
+    if (mode === "terrain") { ensureTerrain(); buildAtlas(); }
   })
   .catch((err) => console.error("Could not load the Mont Blanc terrain:", err));
+// construit une seule fois les courbes de niveau et le relief, dès qu'on en a besoin (mode Mont Blanc) ou au calme
+function ensureTerrain() {
+  if (terrainBuilt || !dem) return;
+  terrainBuilt = true;
+  buildContours();
+  buildRelief();
+}
 let lastGrid = null;        // dernière grille du plan 2D : ses répétitions s'effacent en quittant le mode
 let lastSphere = null;      // mesures de la boule (fit, R), pour son focus
 let lastRoll = null;        // mesures du rouleau (fit, R, rows), pour son focus et le glisser
