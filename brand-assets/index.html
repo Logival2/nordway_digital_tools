@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Brand assets — NORDWAY Tools</title>
+<meta name="description" content="The NORDWAY brand library: logo, campaign, graphics, product, objects, motion and type, sorted as in the ASSETS folder." />
+<link rel="icon" href="../ui/favicon.png" />
+<link rel="stylesheet" href="../ui/site.css" />
+<!-- Le manifeste est écrit par build_assets.py à partir du dossier ../ASSETS (relancer le script après un ajout) -->
+<script src="assets.js"></script>
+<style>
+  /* ── tête de page ── */
+  .hero { padding-block: 48px 28px; }
+  .hero h1 { font-size: clamp(64px, 13vw, 184px); }
+  .hero .intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; margin: 28px 0 32px; }
+  .hero .intro p { font-size: 19px; line-height: 1.25; }
+  @media (max-width: 720px) { .hero .intro { grid-template-columns: minmax(0, 1fr); } }
+
+  /* ── barre de filtres, collée sous la barre haute ── */
+  .filters {
+    position: sticky;
+    top: calc(var(--top-h) + 2px);
+    z-index: 20;
+    background: var(--paper);
+    border-bottom: 1px solid var(--hair);
+  }
+  .filters .wrap { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 12px; }
+  .filters .seg { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .filters .density { flex: none; }
+  .filters .density button { min-width: 38px; justify-content: center; padding: 0; }
+  @media (max-width: 720px) { .filters .density { display: none; } }
+
+  /* ── rubriques : numéro / titre XXL, comme les chapitres de la guideline ── */
+  section.group { border-top: 2px solid var(--line); padding-block: 24px 64px; }
+  section.group:first-of-type { border-top: 0; }
+  .g-head { display: grid; grid-template-columns: 120px minmax(0, 1fr) auto; gap: 24px; align-items: start; margin-bottom: 32px; }
+  .g-head .num { font-family: var(--mono); font-size: 13px; padding-top: 8px; }
+  .g-head h2 { font-size: clamp(44px, 7vw, 96px); }
+  .g-head p { margin-top: 14px; }
+  .g-head .path { text-align: right; padding-top: 8px; }
+  .g-head .path b { display: block; font-weight: 400; color: var(--ink); }
+  @media (max-width: 720px) {
+    .g-head { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+    .g-head .path { text-align: left; }
+  }
+
+  /* ── grille ── */
+  .grid { display: grid; gap: 28px 20px; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); }
+  @media (max-width: 1100px) { .grid { --cols: 3 !important; } }
+  @media (max-width: 720px) { .grid { --cols: 2 !important; gap: 20px 12px; } }
+  .tile {
+    display: block;
+    width: 100%;
+    padding: 0;
+    text-align: left;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+  }
+  .tile .frame {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--panel);
+    outline: 1px solid transparent;
+    outline-offset: -1px;
+    transition: outline-color 0.12s;
+  }
+  .tile:hover .frame { outline: 2px solid var(--line); outline-offset: -2px; }
+  .tile img, .tile video { width: 100%; height: 100%; object-fit: cover; }
+  .tile.contain img { object-fit: contain; padding: 14%; }
+  .tile.contain .frame { background: var(--white); }
+  /* repère de visée au survol : quatre coins Signal sur Encre */
+  .tile .frame::after {
+    content: "";
+    position: absolute;
+    inset: 10px;
+    --c: linear-gradient(var(--signal), var(--signal));
+    background:
+      var(--c) left top / 12px 2px no-repeat, var(--c) left top / 2px 12px no-repeat,
+      var(--c) right top / 12px 2px no-repeat, var(--c) right top / 2px 12px no-repeat,
+      var(--c) left bottom / 12px 2px no-repeat, var(--c) left bottom / 2px 12px no-repeat,
+      var(--c) right bottom / 12px 2px no-repeat, var(--c) right bottom / 2px 12px no-repeat;
+    opacity: 0;
+    transition: opacity 0.12s;
+    pointer-events: none;
+  }
+  .tile:hover .frame::after, .tile:focus-visible .frame::after { opacity: 1; }
+  .tile .badge {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    padding: 4px 7px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--paper);
+    background: var(--ink);
+  }
+  .cap { display: flex; justify-content: space-between; gap: 12px; padding-top: 8px; }
+  .cap b { font-family: var(--mono); font-weight: 400; font-size: 11.5px; letter-spacing: 0.04em; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cap span { flex: none; }
+
+  /* le wordmark tient toute une ligne */
+  .tile.wide { grid-column: span 2; }
+  /* la tuile large prend la hauteur de sa rangée (fixée par les tuiles 4:5 voisines) */
+  .tile.wide { display: flex; flex-direction: column; }
+  .tile.wide .frame { flex: 1; aspect-ratio: auto; min-height: 220px; }
+  .hero .intro p.label { font-size: 11px; line-height: 1.5; }
+  @media (max-width: 720px) { .tile.wide { grid-column: 1 / -1; } }
+
+  /* ── typographie : spécimens ── */
+  .fonts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; }
+  @media (max-width: 900px) { .fonts { grid-template-columns: minmax(0, 1fr); } }
+  .font {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px 16px;
+    padding: 16px 0 22px;
+    border-top: 2px solid var(--line);
+  }
+  .font .aa { grid-column: 1 / -1; font-size: clamp(56px, 7vw, 104px); line-height: 0.9; letter-spacing: -0.03em; margin: 8px 0 6px; overflow: hidden; white-space: nowrap; text-overflow: clip; }
+  .font .line { grid-column: 1 / -1; font-size: 19px; line-height: 1.2; }
+  .font .btn { align-self: start; }
+
+  /* ── couleurs de référence (guideline) ── */
+  .swatches { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 20px; }
+  @media (max-width: 900px) { .swatches { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .sw { display: block; width: 100%; padding: 0; border: 0; background: none; text-align: left; cursor: copy; }
+  .sw .chip { aspect-ratio: 1; outline: 1px solid var(--hair); outline-offset: -1px; }
+  .sw .name { display: block; font-size: 20px; margin-top: 10px; }
+  .sw .hex { display: block; font-family: var(--mono); font-size: 12px; }
+  .sw .use { display: block; margin-top: 4px; }
+  .sw.copied .hex::after { content: "  copied"; color: var(--mute); }
+
+  /* ── fiche (lightbox) : image à gauche, fiche technique à droite ── */
+  dialog.sheet {
+    width: 100vw;
+    max-width: none;
+    height: 100vh;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    color: var(--ink);
+    background: var(--paper);
+  }
+  dialog.sheet[open] { display: grid; grid-template-columns: minmax(0, 1fr) 400px; grid-template-rows: var(--top-h) minmax(0, 1fr); animation: sheetIn 0.2s linear; }
+  @keyframes sheetIn { from { opacity: 0; } }
+  dialog.sheet::backdrop { background: var(--paper); }
+  .sheet .bar { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; padding: 0 var(--gutter); border-bottom: 2px solid var(--line); }
+  .sheet .bar .end { justify-self: end; display: flex; gap: 0; }
+  .sheet .bar .end .btn + .btn { margin-left: -1px; }
+  .sheet .view { position: relative; display: grid; place-items: center; min-height: 0; padding: 32px; background: var(--panel); }
+  .sheet .view img, .sheet .view video { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .sheet .view.light { background: var(--white); }
+  .sheet aside { display: flex; flex-direction: column; gap: 20px; padding: 24px var(--gutter); border-left: 2px solid var(--line); overflow-y: auto; }
+  .sheet aside h2 { font-size: 56px; word-break: break-word; }
+  .spec { margin: 0; border-top: 2px solid var(--line); }
+  .spec > div { display: grid; grid-template-columns: 40% minmax(0, 1fr); padding: 9px 0; border-bottom: 1px solid var(--hair); font-family: var(--mono); font-size: 12.5px; }
+  .spec dt { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); padding-top: 1px; }
+  .spec dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+  .sheet .actions { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
+  .sheet .actions .row { display: flex; }
+  .sheet .actions .row .btn { flex: 1; }
+  .sheet .actions .row .btn + .btn { margin-left: -1px; }
+  .sheet .count { font-variant-numeric: tabular-nums; }
+  @media (max-width: 860px) {
+    dialog.sheet[open] { grid-template-columns: minmax(0, 1fr); grid-template-rows: var(--top-h) 56svh auto; overflow-y: auto; }
+    .sheet aside { border-left: 0; border-top: 2px solid var(--line); }
+    .sheet aside h2 { font-size: 44px; }
+  }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    z-index: 100;
+    translate: -50% 0;
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--signal);
+    background: var(--ink);
+    opacity: 0;
+    transition: opacity 0.15s;
+    pointer-events: none;
+  }
+  .toast.on { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="label ink" href="../">← NORDWAY Tools</a>
+    <span class="mark seal" aria-hidden="true"></span>
+    <span class="end label ink"><span>T.06</span><span id="topCount"></span></span>
+  </div>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <h1 class="xxl">Brand<br>assets</h1>
+    <div class="intro">
+      <p>Every file of the NORDWAY identity in one place, sorted as in the ASSETS folder. Open a file to read its specs, download the original or copy its path.</p>
+      <p class="label" style="align-self:end">Images shown here are light web copies. Downloads are always the original file.</p>
+    </div>
+    <div class="meta">
+      <div><span class="label">Source</span><strong>ASSETS/</strong></div>
+      <div><span class="label">Files</span><strong id="metaFiles">—</strong></div>
+      <div><span class="label">Formats</span><strong id="metaFormats">—</strong></div>
+      <div><span class="label">Image format</span><strong>4:5 · 1080 × 1350</strong></div>
+    </div>
+  </div>
+
+  <nav class="filters" aria-label="Folders">
+    <div class="wrap">
+      <div class="seg" id="filters" role="group" aria-label="Show a folder"></div>
+      <div class="seg density" role="group" aria-label="Columns">
+        <button type="button" data-cols="6" aria-pressed="false" title="Small">S</button>
+        <button type="button" data-cols="4" aria-pressed="true" title="Medium">M</button>
+        <button type="button" data-cols="3" aria-pressed="false" title="Large">L</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="wrap" id="groups"></div>
+</main>
+
+<footer class="site">
+  <div class="coord"><span class="mark word" aria-label="NORDWAY"></span><span>Glacier du Géant</span><span>45°51′17″ N, 6°55′00″ E</span></div>
+  <div class="wrap fine label"><span>NORDWAY® · Brand assets</span><span>Rebuild after adding files: python brand-assets/build_assets.py</span></div>
+</footer>
+
+<!-- Fiche d'un fichier -->
+<dialog class="sheet" id="sheet" aria-labelledby="sheetTitle">
+  <div class="bar">
+    <span class="label ink count" id="sheetCount"></span>
+    <span class="mark seal" style="width:26px" aria-hidden="true"></span>
+    <div class="end">
+      <button class="btn" type="button" id="prevBtn" aria-label="Previous file">←</button>
+      <button class="btn" type="button" id="nextBtn" aria-label="Next file">→</button>
+      <button class="btn" type="button" id="closeBtn">Close · Esc</button>
+    </div>
+  </div>
+  <div class="view" id="sheetView"></div>
+  <aside>
+    <div>
+      <span class="label" id="sheetFolder"></span>
+      <h2 class="xxl" id="sheetTitle"></h2>
+    </div>
+    <dl class="spec" id="sheetSpec"></dl>
+    <div class="actions">
+      <a class="cta" id="dlBtn" download><span class="lead"><span class="dot"></span>Download original</span><span>↓</span></a>
+      <div class="row">
+        <button class="btn" type="button" id="copyBtn">Copy path</button>
+        <a class="btn" id="openBtn" target="_blank" rel="noopener">Open file</a>
+      </div>
+    </div>
+  </aside>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const GROUPS = window.NORDWAY_ASSETS || [];
+  const $ = (id) => document.getElementById(id);
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const fmtBytes = (b) => b >= 1048576 ? `${(b / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(b / 1024))} KB`;
+  const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+  const ratio = (w, h) => { const g = gcd(w, h); const r = `${w / g}:${h / g}`; return r.length > 7 ? (w / h).toFixed(2) : r; };
+  // les chemins viennent du système de fichiers (espaces, accents) : on encode chaque segment
+  const url = (p) => p.split("/").map((s) => (s === ".." ? s : encodeURIComponent(s))).join("/");
+
+  // couleurs de la guideline (référence, pas un dossier d'ASSETS)
+  const COLOURS = [
+    ["Encre", "#0A0A0A", "Text, CTA, 2 px rules"], ["Papier", "#F4F4F4", "Main background"],
+    ["Signal", "#00FF26", "Single accent, ≤ 4 %"], ["Blanc", "#FFFFFF", "Print, size boxes"],
+    ["Cendre", "#7A7A7A", "Labels, captions"], ["Névé", "#BDBDBA", "Secondary rules"],
+    ["Glacier", "#B8CCD1", "Product colourway"], ["Crevasse", "#4C7A7E", "Photo · Glacier fabric"],
+    ["Granite", "#C3C3C3", "Photo · grey background"], ["Aube", "#9C8684", "Photo · night colourway"],
+    ["Latérite", "#AA643E", "Photo · desert ground"], ["Crépuscule", "#78594B", "Photo · desert sky"],
+  ];
+
+  const all = [];          // tous les fichiers, dans l'ordre d'affichage (la fiche passe de l'un à l'autre)
+  const sections = [];
+  let total = 0;
+  const formats = new Set();
+
+  GROUPS.forEach((g, gi) => {
+    const sec = document.createElement("section");
+    sec.className = "group";
+    sec.id = g.id;
+    sec.dataset.group = g.id;
+    sec.innerHTML = `
+      <div class="g-head">
+        <span class="num">${pad2(gi + 1)}</span>
+        <div><h2 class="xxl"></h2><p></p></div>
+        <span class="path label"><b></b><span></span></span>
+      </div>`;
+    sec.querySelector("h2").textContent = g.label;
+    sec.querySelector(".g-head p").textContent = g.desc;
+    sec.querySelector(".path b").textContent = `ASSETS/${g.folder}`;
+    sec.querySelector(".path span").textContent = `${pad2(g.items.length)} files`;
+    total += g.items.length;
+    g.items.forEach((it) => formats.add(it.ext));
+
+    if (g.id === "typo") {
+      const box = document.createElement("div");
+      box.className = "fonts";
+      g.items.forEach((it, i) => {
+        const fam = `NWAsset${gi}_${i}`;
+        const face = new FontFace(fam, `url("${url(it.src)}")`);
+        face.load().then((f) => document.fonts.add(f)).catch(() => {});
+        const el = document.createElement("div");
+        el.className = "font";
+        el.innerHTML = `<span class="label ink"></span><a class="btn" download>Download ↓</a>
+          <div class="aa">Aa Nordway 0123</div>
+          <p class="line">When the ridge turns, the shell holds.</p>
+          <span class="label"></span>`;
+        el.querySelector(".label").textContent = it.name.replace(/_/g, " ");
+        el.querySelector(".label:last-child").textContent = `${it.file} · ${fmtBytes(it.bytes)}`;
+        el.querySelector("a").href = url(it.src);
+        el.querySelectorAll(".aa, .line").forEach((n) => (n.style.fontFamily = `"${fam}", var(--mono)`));
+        box.append(el);
+      });
+      sec.append(box);
+    } else {
+      const grid = document.createElement("div");
+      grid.className = "grid";
+      g.items.forEach((it) => grid.append(tile(it, g)));
+      sec.append(grid);
+    }
+    $("groups").append(sec);
+    sections.push(sec);
+  });
+
+  // couleurs, en dernier
+  {
+    const sec = document.createElement("section");
+    sec.className = "group";
+    sec.id = "colour";
+    sec.dataset.group = "colour";
+    sec.innerHTML = `
+      <div class="g-head">
+        <span class="num">${pad2(GROUPS.length + 1)}</span>
+        <div><h2 class="xxl">Colour</h2><p>From the identity guideline. Click a colour to copy its hex code into a tool's colour picker.</p></div>
+        <span class="path label"><b>Guideline v0.2</b><span>${COLOURS.length} colours</span></span>
+      </div>
+      <div class="swatches"></div>`;
+    const box = sec.querySelector(".swatches");
+    for (const [name, hex, use] of COLOURS) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "sw";
+      b.innerHTML = `<span class="chip"></span><span class="name"></span><span class="hex"></span><span class="use label"></span>`;
+      b.querySelector(".chip").style.background = hex;
+      b.querySelector(".name").textContent = name;
+      b.querySelector(".hex").textContent = hex;
+      b.querySelector(".use").textContent = use;
+      b.addEventListener("click", () => copy(hex, b));
+      box.append(b);
+    }
+    $("groups").append(sec);
+    sections.push(sec);
+  }
+
+  $("topCount").textContent = `${total} files`;
+  $("metaFiles").textContent = `${total} in ${GROUPS.length} folders`;
+  $("metaFormats").textContent = [...formats].join(" · ");
+
+  function tile(it, g) {
+    const idx = all.push({ ...it, group: g }) - 1;
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "tile";
+    if (it.kind === "image" && (g.id === "logo" || it.alpha)) b.classList.add("contain");
+    if (it.kind === "image" && it.w / it.h > 2) b.classList.add("wide");
+    b.innerHTML = `<div class="frame"></div><div class="cap"><b></b><span class="label"></span></div>`;
+    const frame = b.querySelector(".frame");
+    if (it.kind === "video") {
+      const v = document.createElement("video");
+      v.muted = true; v.loop = true; v.playsInline = true; v.preload = "metadata";
+      v.src = url(it.src) + "#t=0.5";
+      frame.append(v);
+      const badge = document.createElement("span");
+      badge.className = "badge";
+      badge.textContent = "▶ Video";
+      frame.append(badge);
+      b.addEventListener("pointerenter", () => v.play().catch(() => {}));
+      b.addEventListener("pointerleave", () => v.pause());
+      v.addEventListener("loadedmetadata", () => {
+        it.w = v.videoWidth; it.h = v.videoHeight; it.dur = v.duration;
+        all[idx].w = it.w; all[idx].h = it.h; all[idx].dur = it.dur;
+        b.querySelector(".cap span").textContent = `${it.ext} · ${v.duration.toFixed(1)} s`;
+      });
+    } else {
+      const img = document.createElement("img");
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.alt = it.name;
+      img.src = it.thumb;
+      frame.append(img);
+    }
+    b.querySelector(".cap b").textContent = it.name;
+    b.querySelector(".cap span").textContent = it.kind === "image" ? `${it.ext} · ${it.w}×${it.h}` : it.ext;
+    b.addEventListener("click", () => openSheet(idx));
+    return b;
+  }
+
+  // ── filtres : une rubrique à la fois, ou tout ──
+  const filters = $("filters");
+  const addFilter = (id, label, n) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.dataset.filter = id;
+    b.setAttribute("aria-pressed", String(id === "all"));
+    b.innerHTML = `<span></span><sup></sup>`;
+    b.querySelector("span").textContent = label;
+    b.querySelector("sup").textContent = n;
+    b.addEventListener("click", () => setFilter(id));
+    filters.append(b);
+  };
+  addFilter("all", "All", total);
+  GROUPS.forEach((g) => addFilter(g.id, g.label, g.items.length));
+  addFilter("colour", "Colour", COLOURS.length);
+  function setFilter(id) {
+    for (const b of filters.children) b.setAttribute("aria-pressed", String(b.dataset.filter === id));
+    for (const s of sections) s.hidden = id !== "all" && s.dataset.group !== id;
+    const first = sections.find((s) => !s.hidden);
+    if (first) window.scrollTo({ top: Math.max(0, first.offsetTop - 140), behavior: "smooth" });
+    try { history.replaceState(null, "", id === "all" ? location.pathname : `#${id}`); } catch {}
+  }
+  const start = location.hash.slice(1);
+  if (start && sections.some((s) => s.dataset.group === start)) setFilter(start);
+
+  // ── densité de la grille (souvenir local, facultatif) ──
+  const density = document.querySelectorAll(".density button");
+  const setCols = (n) => {
+    document.querySelectorAll(".grid").forEach((g) => g.style.setProperty("--cols", n));
+    density.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.cols === String(n))));
+    try { localStorage.setItem("nw-cols", n); } catch {}
+  };
+  density.forEach((b) => b.addEventListener("click", () => setCols(b.dataset.cols)));
+  try { const c = localStorage.getItem("nw-cols"); if (c) setCols(c); } catch {}
+
+  // ── fiche ──
+  const sheet = $("sheet");
+  let cur = 0;
+  function openSheet(i) {
+    cur = (i + all.length) % all.length;
+    const it = all[cur];
+    const view = $("sheetView");
+    view.replaceChildren();
+    view.classList.toggle("light", it.group.id === "logo" || !!it.alpha);
+    if (it.kind === "video") {
+      const v = document.createElement("video");
+      v.src = url(it.src); v.controls = true; v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true;
+      view.append(v);
+    } else {
+      const img = document.createElement("img");
+      img.alt = it.name;
+      img.src = it.web;                         // la copie web s'affiche tout de suite…
+      const full = new Image();                 // …puis l'original la remplace une fois chargé
+      full.onload = () => { if (all[cur] === it) img.src = full.src; };
+      full.src = url(it.src);
+      view.append(img);
+    }
+    $("sheetFolder").textContent = `${pad2(GROUPS.indexOf(it.group) + 1)} · ${it.group.label}`;
+    $("sheetTitle").textContent = it.name.replace(/_/g, " ");
+    $("sheetCount").textContent = `${pad2(cur + 1)} / ${pad2(all.length)}`;
+    const rows = [
+      ["File", it.file],
+      ["Folder", `ASSETS/${it.group.folder}`],
+      ["Format", it.ext + (it.alpha ? " · transparent" : "")],
+      ["Size", it.w ? `${it.w} × ${it.h} px` : "—"],
+      ["Ratio", it.w ? ratio(it.w, it.h) : "—"],
+      ...(it.dur ? [["Length", `${it.dur.toFixed(1)} s`]] : []),
+      ["Weight", fmtBytes(it.bytes)],
+    ];
+    $("sheetSpec").replaceChildren(...rows.map(([k, v]) => {
+      const d = document.createElement("div");
+      d.innerHTML = "<dt></dt><dd></dd>";
+      d.firstChild.textContent = k;
+      d.lastChild.textContent = v;
+      return d;
+    }));
+    $("dlBtn").href = url(it.src);
+    $("dlBtn").setAttribute("download", it.file);
+    $("openBtn").href = url(it.src);
+    if (!sheet.open) sheet.showModal();
+  }
+  $("prevBtn").addEventListener("click", () => openSheet(cur - 1));
+  $("nextBtn").addEventListener("click", () => openSheet(cur + 1));
+  $("closeBtn").addEventListener("click", () => sheet.close());
+  sheet.addEventListener("close", () => $("sheetView").replaceChildren());
+  sheet.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft") { e.preventDefault(); openSheet(cur - 1); }
+    if (e.key === "ArrowRight") { e.preventDefault(); openSheet(cur + 1); }
+  });
+  $("copyBtn").addEventListener("click", () => copy(all[cur].src.replace(/^\.\.\//, "")));
+
+  // ── copier ──
+  let toastTimer;
+  function copy(text, el) {
+    const done = () => {
+      const t = $("toast");
+      t.textContent = `Copied · ${text}`;
+      t.classList.add("on");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove("on"), 1600);
+      if (el) { el.classList.add("copied"); setTimeout(() => el.classList.remove("copied"), 1600); }
+    };
+    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(done, done);
+    else done();
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1023 @@
+/* ═══════════════════════════════════════════════════════════════════
+   NORDWAY Digital tools — interface commune (d'après ui_001 des Digital tools,
+   même structure et mêmes sélecteurs : l'UX ne change pas, seul l'habillage suit la charte NORDWAY)
+
+   Charte (Identity guideline v0.2) :
+   · fond Papier #F4F4F4, Encre #0A0A0A ; le vert Signal #00FF26 ne fait que signaler
+     (point de l'action d'export, focus clavier, squelette de la main) — jamais du texte sur fond clair
+   · deux familles, une seule graisse : Nord Pro (MingLiU Prop) pour les titres et les phrases,
+     Roboto Mono Regular en capitales pour l'interface et les données
+   · aucun arrondi (sauf les cercles), aucune ombre ; filets de 2 px pour la structure, 1 px pour séparer
+   · la hiérarchie se fait par la taille, la casse, l'interlettrage et la famille
+   ═══════════════════════════════════════════════════════════════════ */
+@font-face {
+  font-family: "Nord Pro";
+  src: url("../fonts/Nord_pro_regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Nord Pro SemiBold";
+  src: url("../fonts/Nord_pro_SemiBold.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Nord Pro Mono";
+  src: url("../fonts/Nord_pro_mono.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+/* Roboto Mono, fichier variable ; la charte n'utilise que le Regular (400). Licence OFL : fonts/RobotoMono-OFL.txt */
+@font-face {
+  font-family: "Roboto Mono";
+  src: url("../fonts/RobotoMono-Variable.ttf") format("truetype");
+  font-weight: 100 700;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light;
+  /* ── palette NORDWAY ── */
+  --paper: #f4f4f4;     /* Papier : fond principal */
+  --encre: #0a0a0a;     /* Encre : texte, CTA, filets 2 px */
+  --signal: #00ff26;    /* Signal : accent unique, ≤ 4 % */
+  --cendre: #666664;    /* labels, méta : Cendre foncé (#7A7A7A ne passe pas AA sur Papier en 11 px) */
+  --neve: #bdbdba;      /* filets secondaires */
+  --brouillard: #d9d9d9;
+  --blanc: #ffffff;     /* cases, champs */
+
+  /* ── familles ── */
+  --display: "Nord Pro", "MingLiU Prop", "Courier New", serif;
+  --mono: "Roboto Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --sans: var(--mono);  /* les outils parlent de --sans pour l'interface : c'est la mono ici */
+  --title: var(--display);
+
+  /* ── tailles ── */
+  --fs-title: clamp(3.2rem, 2.4rem + 2.2vw, 4.4rem);
+  --fs-text: 11.5px;    /* libellés : mono capitales */
+  --fs-small: 10.5px;
+  --fs-mono: 11.5px;
+  --fs-prose: 15px;     /* aides : Nord Pro, casse d'origine */
+  --track: 0.06em;
+  --track-mono: 0.02em;
+
+  /* ── surfaces (noms repris de ui_001, que les outils lisent) ── */
+  --page: var(--paper);
+  --glass: rgba(244, 244, 244, 0.9);  /* panneau : Papier presque opaque, un léger flou laisse deviner le rendu */
+  --blur: 10px;
+  --text: var(--encre);
+  --line: var(--encre);
+  --line-faint: rgba(10, 10, 10, 0.18);
+  --dash: var(--neve);                /* ex-filets pointillés : filets pleins de 1 px */
+  --pill: transparent;                /* contrôle au repos : une case, bord 1 px */
+  --pill-hover: rgba(10, 10, 10, 0.06);
+  --on: var(--encre);                 /* choix actif : aplat Encre… */
+  --on-text: var(--paper);            /* …texte Papier */
+  --field: var(--blanc);
+  --picker: rgba(244, 244, 244, 0.97);
+  --lime: var(--signal);              /* ancien nom de l'accent : squelette de la main, curseur qui attrape */
+  --crop-gap: 8px;
+  --crop-len: 12px;
+  --radius: 0;
+  --radius-panel: 0;
+  --pad: 14px;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--mono);
+  font-size: var(--fs-text);
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: var(--track);
+  text-transform: uppercase;
+  color: var(--text);
+  background: var(--page);
+  -webkit-font-smoothing: antialiased;
+}
+body {
+  display: flex;
+  flex-direction: row;
+}
+
+.eyebrow,
+.badge,
+#panelFooter,
+dialog h3 {
+  font-size: var(--fs-small);
+  letter-spacing: 0.08em;
+}
+/* Aides : des phrases, en Nord Pro, casse d'origine (le récit) */
+.hint {
+  font-family: var(--display);
+  font-size: var(--fs-prose);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  text-align: left;
+  color: var(--text);
+}
+/* Données : Roboto Mono, casse d'origine, chiffres alignés */
+.mono,
+#readout,
+#formatInfo,
+#motionTimeLabel,
+#timeLabel,
+#simInfo {
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: var(--fs-mono);
+  line-height: 1.35;
+  letter-spacing: var(--track-mono);
+  text-transform: uppercase;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+#formatInfo, #motionTimeLabel, #timeLabel { margin: 0; color: var(--cendre); }
+
+/* ── Panneaux ── */
+#panel,
+#rightPanel {
+  color: var(--text);
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(var(--blur));
+  backdrop-filter: blur(var(--blur));
+  border-radius: 0;
+  z-index: 1;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-faint) transparent;
+}
+#panel {
+  flex: 0 0 auto;
+  width: clamp(300px, 24vw, 420px);
+  align-self: flex-start;
+  max-height: calc(100% - 20px);
+  scrollbar-gutter: stable;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  counter-reset: nwSection;
+}
+#panel > * { flex-shrink: 0; }
+#rightPanel {
+  flex: 0 0 16vw;
+  width: 16vw;
+  min-width: 230px;
+  align-self: flex-end;
+  margin: 10px;
+  padding: var(--pad);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 2px solid var(--line);
+}
+
+/* En-tête du panneau : retour · sceau · compteur, sous un filet de 2 px ; puis le titre XXL */
+#panelHead {
+  padding: var(--pad) var(--pad) 12px;
+  border-bottom: 2px solid var(--line);
+}
+.eyebrow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.eyebrow > :first-child { grid-column: 1; grid-row: 1; justify-self: start; }
+.eyebrow > :nth-child(2) { grid-column: 3; grid-row: 1; justify-self: end; }
+/* le sceau au centre de la ligne, comme dans le header des maquettes (Menu / sceau / Bag) */
+#panelHead .eyebrow::after {
+  content: "";
+  grid-column: 2;
+  grid-row: 1;
+  width: 24px;
+  height: 22px;
+  background: var(--text);
+  -webkit-mask: url("sceau.png") center / contain no-repeat;
+  mask: url("sceau.png") center / contain no-repeat;
+}
+.badge { padding: 0; border: none; }
+.backLink {
+  color: inherit;
+  text-decoration: none;
+}
+.backLink:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Titre XXL en Nord Pro, une seule graisse : plus de faux gras ; capitales serrées (−4 %), interligne 0,86.
+   Le SVG est construit et ajusté à la largeur par nordway.js */
+.toolTitle {
+  margin: 18px 0 0;
+  font-size: var(--fs-title);
+  font-weight: 400;
+  line-height: 0.86;
+}
+.toolTitle svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+  font-family: var(--display);
+  letter-spacing: -0.04em;
+  fill: currentColor;
+  stroke: none;
+}
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── Sections : numérotées comme une fiche technique (01, 02…), filet de 1 px, « + / – » pour replier ── */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 var(--pad) 14px;
+  border-top: 1px solid var(--dash);
+  counter-increment: nwSection;
+}
+#panelHead + .section { border-top: none; }
+.section > h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0 calc(var(--pad) * -1);
+  padding: 10px var(--pad) 6px;
+  font-size: var(--fs-text);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  user-select: none;
+}
+.section > h2::before {
+  content: counter(nwSection, decimal-leading-zero);
+  color: var(--cendre);
+  font-variant-numeric: tabular-nums;
+}
+.section > h2::after { content: "–"; margin-left: auto; }
+.section > h2:hover { text-decoration: underline; text-underline-offset: 3px; }
+.section p,
+#rightPanel p { margin: 0; }
+.section.collapsed { padding-bottom: 0; }
+.section.collapsed > h2::after { content: "+"; }
+.section.collapsed > :not(h2) { display: none !important; }
+
+/* Réglage sur une ligne : libellé, contrôle, valeur à droite (ajoutée par nordway.js) */
+.row {
+  display: grid;
+  grid-template-columns: 40% minmax(0, 1fr);
+  grid-template-areas: "label ctl";
+  align-items: center;
+  column-gap: 10px;
+}
+.row:has(> select:not([hidden])) { grid-template-columns: auto minmax(0, 1fr); column-gap: 16px; }
+.row:has(> output) {
+  grid-template-columns: 40% minmax(0, 1fr) 4.4em;
+  grid-template-areas: "label ctl value";
+}
+.row > label {
+  grid-area: label;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.row > :not(label):not(output) { grid-area: ctl; min-width: 0; }
+.row:has(> .pills) {
+  grid-template-columns: 1fr;
+  grid-template-areas: "label" "ctl";
+  row-gap: 6px;
+}
+.row > .pills { grid-area: ctl; }
+.row > .pills button { flex: 1 1 auto; }
+.row > output {
+  grid-area: value;
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  color: var(--cendre);
+}
+
+/* ── Boutons : cases carrées, bord 1 px Encre ; l'action principale en aplat Encre ── */
+button {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+button:disabled { opacity: 0.35; cursor: default; }
+:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+
+#panel button,
+#rightPanel button,
+dialog button {
+  min-height: 32px;
+  padding: 2px 12px;
+  text-align: center;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--pill);
+  transition: background-color 0.12s, color 0.12s;
+}
+#panel button:not(:disabled):hover,
+#rightPanel button:not(:disabled):hover { background: var(--pill-hover); }
+
+/* Le bloc Encre de l'action principale (comme « Add to cart » dans les maquettes) : libellé à gauche, flèche à droite */
+#panel button.primary,
+#rightPanel button.primary,
+#panel button.cta,
+#rightPanel button.cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 52px;
+  margin: 0;
+  padding: 0 16px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-align: left;
+  color: var(--on-text);
+  border: none;
+  border-radius: 0;
+  background: var(--on);
+}
+#panel button.primary::after,
+#rightPanel button.primary::after,
+#panel button.cta::after,
+#rightPanel button.cta::after { content: "→"; letter-spacing: 0; }
+#panel button.primary:not(:disabled):hover,
+#rightPanel button.primary:not(:disabled):hover,
+#panel button.cta:not(:disabled):hover,
+#rightPanel button.cta:not(:disabled):hover { background: #262626; }
+/* Petite action discrète */
+#panel button.pill,
+#rightPanel button.pill {
+  align-self: flex-start;
+  min-height: 28px;
+  padding: 2px 14px;
+}
+.btnRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+}
+.btnRow > button { flex: 1; }
+.btnRow > button + button { margin-left: -1px; }   /* cases accolées : un seul filet entre deux */
+.btnRow > button.primary,
+.btnRow > button.cta { flex-basis: 100%; margin-left: 0; }
+
+/* Groupes de choix (mode, format, lecteur, et toute rangée .pills) : sélecteur de cases accolées,
+   le choix actif en aplat Encre — le sélecteur de tailles des maquettes */
+#modeSwitch,
+#formatButtons,
+#transport,
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  padding: 0 0 1px 1px; /* place des filets qui se chevauchent */
+}
+#panel #modeSwitch button,
+#panel #formatButtons button,
+#panel #transport button,
+#panel .pills button,
+#rightPanel #modeSwitch button,
+#rightPanel #formatButtons button,
+#rightPanel #transport button,
+#rightPanel .pills button {
+  flex: 1 1 0;
+  min-height: 34px;
+  margin: 0 0 -1px -1px;
+  padding: 2px 8px;
+  text-align: center;
+  white-space: nowrap;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--pill);
+  box-shadow: none;
+}
+#modeSwitch button[aria-pressed="true"],
+#formatButtons button.active,
+#formatButtons button[aria-pressed="true"],
+#transport button.active,
+.pills button[aria-pressed="true"],
+.pills button.active { background: var(--on) !important; color: var(--on-text) !important; }
+#transport button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#transport svg { width: 11px; height: 11px; fill: currentColor; }
+
+/* Export : le bloc Encre, avec le point Signal (la visée) — la seule touche de vert de l'interface — + carré noir */
+#exportRow {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+#exportRow > button:not(#extraBtn) { flex: 1; }
+#rightPanel #exportRow #exportBtn,
+#rightPanel #exportRow #exportMp4Btn,
+#panel #exportRow #exportBtn,
+#panel #exportRow #exportMp4Btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 0 14px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-align: left;
+  color: var(--on-text);
+  border: none;
+  border-radius: 0;
+  background: var(--on);
+}
+#exportRow #exportBtn::before,
+#exportRow #exportMp4Btn::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  background: var(--signal);
+}
+#exportRow #exportBtn:not(:disabled):hover,
+#exportRow #exportMp4Btn:not(:disabled):hover { background: #262626 !important; }
+#rightPanel #extraBtn,
+#extraBtn {
+  flex: none;
+  width: 32px;
+  min-width: 32px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--pill);
+}
+/* le carré : un rond d'enregistrement, la seule forme ronde du panneau (avec le cercle de la marque) */
+#extraBtn::after {
+  content: "";
+  display: block;
+  width: 9px;
+  height: 9px;
+  margin: auto;
+  border-radius: 50%;
+  background: var(--text);
+}
+
+/* ── Champs : cases Blanc, filet Névé, Encre au focus ── */
+select,
+textarea,
+input[type="text"],
+input[type="number"],
+input[type="password"] {
+  width: 100%;
+  min-width: 0;
+  padding: 6px 8px;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: none;
+  color: var(--text);
+  border: 1px solid var(--neve);
+  border-radius: 0;
+  background: var(--field);
+  outline: none;
+}
+select:focus,
+textarea:focus,
+input[type="text"]:focus,
+input[type="number"]:focus { border-color: var(--line); }
+textarea {
+  resize: vertical;
+  padding: 8px 10px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+}
+select {
+  text-transform: uppercase;
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 6px 28px 6px 10px;
+  background: var(--field) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M.5.5l4 4 4-4' fill='none' stroke='%230a0a0a' stroke-width='1'/%3E%3C/svg%3E") no-repeat right 10px center;
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+select:disabled { opacity: 0.35; cursor: default; }
+option, optgroup { text-transform: uppercase; color: #0a0a0a; background: #fff; }
+
+/* Menus personnalisables (Chrome, Edge) : la liste ouverte est une plaque Papier sous un filet Encre */
+@supports (appearance: base-select) {
+  select,
+  ::picker(select) { appearance: base-select; }
+  select {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    background-image: none;
+  }
+  #panel select > button,
+  #rightPanel select > button,
+  select > button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    text-align: left;
+    color: inherit;
+    border: none;
+    border-radius: 0;
+    background: none;
+  }
+  #panel select > button:hover,
+  #rightPanel select > button:hover { background: none; }
+  select > button selectedcontent {
+    display: block;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  select::picker-icon,
+  select > button::after {
+    content: "";
+    flex: none;
+    width: 9px;
+    height: 5px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M.5.5l4 4 4-4' fill='none' stroke='%230a0a0a' stroke-width='1'/%3E%3C/svg%3E") no-repeat center;
+    transition: rotate 0.2s cubic-bezier(0.4, 0, 0, 1);
+  }
+  select:has(> button)::picker-icon { display: none; }
+  select:open::picker-icon,
+  select:open > button::after { rotate: 180deg; }
+  ::picker(select) {
+    margin: 2px 0;
+    padding: 0;
+    max-height: min(60vh, 420px);
+    overflow-y: auto;
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-top-width: 2px;
+    border-radius: 0;
+    background: var(--picker);
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-faint) transparent;
+    opacity: 0;
+    translate: 0 -4px;
+    transition: opacity 0.15s linear, translate 0.15s linear,
+      overlay 0.15s allow-discrete, display 0.15s allow-discrete;
+  }
+  ::picker(select):popover-open { opacity: 1; translate: 0 0; }
+  @starting-style {
+    ::picker(select):popover-open { opacity: 0; translate: 0 -4px; }
+  }
+  option {
+    display: flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 2px 10px;
+    font-family: var(--mono);
+    font-size: var(--fs-text);
+    letter-spacing: var(--track);
+    text-transform: uppercase;
+    color: var(--text);
+    border-radius: 0;
+    border-bottom: 1px solid var(--dash);
+    background: transparent;
+    cursor: pointer;
+  }
+  option:last-child { border-bottom: none; }
+  option:hover,
+  option:focus-visible { background: var(--pill-hover); outline: none; }
+  option:checked { background: var(--on); color: var(--on-text); }
+  option::checkmark { display: none; }
+  option:disabled { opacity: 0.35; cursor: default; }
+  optgroup {
+    padding: 8px 0 0;
+    font-family: var(--mono);
+    font-size: var(--fs-small);
+    font-weight: 400;
+    color: var(--cendre);
+    background: transparent;
+  }
+}
+/* Menus faits maison (Firefox, Safari : nordway.js) : la même case et la même plaque */
+select.uiMenuSource { display: none !important; }
+#panel .uiMenu > button,
+#rightPanel .uiMenu > button,
+.uiMenu > button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  padding: 6px 10px;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  text-transform: uppercase;
+  color: var(--text);
+  border: 1px solid var(--neve);
+  border-radius: 0;
+  background: var(--field);
+  cursor: pointer;
+}
+.uiMenu > button > span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.uiMenu > button::after {
+  content: "";
+  flex: none;
+  width: 9px;
+  height: 5px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M.5.5l4 4 4-4' fill='none' stroke='%230a0a0a' stroke-width='1'/%3E%3C/svg%3E") no-repeat center;
+  transition: rotate 0.2s cubic-bezier(0.4, 0, 0, 1);
+}
+.uiMenu > button[aria-expanded="true"]::after { rotate: 180deg; }
+.uiMenu > button:disabled { opacity: 0.35; cursor: default; }
+.uiMenuList {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  font-family: var(--mono);
+  font-size: var(--fs-text);
+  letter-spacing: var(--track);
+  text-transform: uppercase;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-top-width: 2px;
+  border-radius: 0;
+  background: var(--picker);
+  outline: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-faint) transparent;
+}
+.uiMenuList:popover-open { animation: uiMenuIn 0.15s linear; }
+@keyframes uiMenuIn { from { opacity: 0; translate: 0 -4px; } }
+.uiMenuList [role="option"] {
+  display: flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 2px 10px;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--dash);
+  cursor: pointer;
+}
+.uiMenuList [role="option"]:last-child { border-bottom: none; }
+.uiMenuList [role="option"].active { background: var(--pill-hover); }
+.uiMenuList [role="option"][aria-selected="true"] { background: var(--on); color: var(--on-text); }
+.uiMenuList [role="option"][aria-disabled="true"] { opacity: 0.35; cursor: default; }
+.uiMenuGroup {
+  padding: 8px 10px 2px;
+  font-family: var(--mono);
+  font-size: var(--fs-small);
+  color: var(--cendre);
+}
+@media (prefers-reduced-motion: reduce) {
+  .uiMenuList:popover-open { animation: none; }
+}
+::placeholder { color: var(--cendre); }
+
+/* Interrupteurs : libellé à gauche, interrupteur carré à droite (curseur carré, comme les repères de visée) */
+.check {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  position: relative;
+  flex: none;
+  width: 28px;
+  height: 14px;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.15s linear;
+}
+input[type="checkbox"]::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 8px;
+  height: 8px;
+  background: var(--line);
+  transition: transform 0.15s linear;
+}
+input[type="checkbox"]:checked { background: var(--on); }
+input[type="checkbox"]:checked::after { transform: translateX(14px); background: var(--on-text); }
+
+/* Sliders : piste de 1 px, Encre jusqu'au curseur (--fill, posé par nordway.js), poignée carrée */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 14px;
+  margin: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 1px;
+  background: linear-gradient(to right, var(--line) var(--fill, 50%), var(--neve) var(--fill, 50%));
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 9px;
+  height: 9px;
+  margin-top: -4px;
+  border-radius: 0;
+  background: var(--line);
+  border: none;
+}
+input[type="range"]::-moz-range-track { height: 1px; border: none; background: var(--neve); }
+input[type="range"]::-moz-range-progress { height: 1px; background: var(--line); }
+input[type="range"]::-moz-range-thumb {
+  width: 9px;
+  height: 9px;
+  border-radius: 0;
+  background: var(--line);
+  border: none;
+}
+
+/* Pastilles de couleur : cases carrées accolées */
+.swatches,
+#gradientColors {
+  display: flex;
+  gap: 4px;
+}
+input[type="color"] {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1;
+  min-width: 0;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: none;
+  cursor: pointer;
+}
+input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
+input[type="color"]::-webkit-color-swatch { border: none; border-radius: 0; }
+input[type="color"]::-moz-color-swatch { border: none; border-radius: 0; }
+input[type="color"]:disabled { opacity: 0.35; cursor: default; }
+#gradientPreview {
+  height: 6px;
+  border-radius: 0;
+}
+
+/* Vignettes (caméra, aperçus) */
+.previewBox,
+#preview:has(> video, > canvas) {
+  flex: none;
+  aspect-ratio: 16 / 9;
+  overflow: clip;
+  border-radius: 0;
+  background: var(--encre);
+}
+video.camVideo {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+canvas.camPreview {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  border-radius: 0;
+  background: var(--encre);
+}
+
+/* Traits de coupe autour des affiches ([data-crop], nordway.js) : le relevé, l'épreuve d'imprimeur */
+.cropMarks {
+  --e: calc(var(--crop-gap) + var(--crop-len));
+  --ink-line: linear-gradient(var(--text), var(--text));
+  position: fixed;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    var(--ink-line) left var(--e) top 0 / 1px var(--crop-len) no-repeat,
+    var(--ink-line) right var(--e) top 0 / 1px var(--crop-len) no-repeat,
+    var(--ink-line) left var(--e) bottom 0 / 1px var(--crop-len) no-repeat,
+    var(--ink-line) right var(--e) bottom 0 / 1px var(--crop-len) no-repeat,
+    var(--ink-line) left 0 top var(--e) / var(--crop-len) 1px no-repeat,
+    var(--ink-line) right 0 top var(--e) / var(--crop-len) 1px no-repeat,
+    var(--ink-line) left 0 bottom var(--e) / var(--crop-len) 1px no-repeat,
+    var(--ink-line) right 0 bottom var(--e) / var(--crop-len) 1px no-repeat;
+}
+
+#bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0;
+}
+#bar > button { white-space: nowrap; }
+#bar > button + button:not([hidden]) { margin-left: -1px; }
+#readout {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Pied du panneau : réinitialiser + RGPD */
+#panelFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding: 10px var(--pad) 12px;
+  border-top: 2px solid var(--line);
+}
+#panel #panelFooter button {
+  min-height: 0;
+  padding: 0;
+  border: none;
+  background: none;
+}
+#panel #panelFooter button:hover { text-decoration: underline; text-underline-offset: 3px; background: none; }
+
+/* ── Téléphone : volet « Desktop only » posé par nordway.js ── */
+#desktopOnly {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: var(--page);
+}
+#desktopOnly .desktopOnlyPlate {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 360px;
+  padding: var(--pad) 0;
+  border-top: 2px solid var(--line);
+}
+#desktopOnly h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 56px;
+  font-weight: 400;
+  line-height: 0.86;
+  letter-spacing: -0.04em;
+}
+#desktopOnly p:not(.eyebrow) {
+  margin: 0;
+  font-family: var(--display);
+  font-size: var(--fs-prose);
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+
+/* ── Téléphone (≤ 760 px), pour les pages marquées <body data-mobile="ok" data-layout="…"> ── */
+@media (max-width: 760px) {
+  html:has(body[data-layout="panels"]),
+  body[data-layout="panels"] {
+    height: auto;
+    min-height: 100%;
+    overflow: auto;
+  }
+  body[data-layout="panels"] { flex-direction: column; }
+  body[data-layout="panels"] #main {
+    order: 0;
+    flex: none;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    height: 52svh;
+    min-height: 280px;
+    padding: 0;
+    background: var(--page);
+  }
+  body[data-layout="panels"] #rightPanel,
+  body[data-layout="panels"] #panel {
+    flex: none;
+    width: auto;
+    min-width: 0;
+    max-height: none;
+    margin: 10px 10px 0;
+    overflow: visible;
+  }
+  body[data-layout="panels"] #rightPanel { order: 1; align-self: stretch; }
+  body[data-layout="panels"] #panel { order: 2; align-self: stretch; margin-bottom: 10px; }
+
+  body[data-layout="fullscreen"] #panel {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: auto;
+    min-width: 0;
+    max-height: 50svh;
+    margin: 0 8px 8px;
+  }
+  #panelToggle {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 3;
+    min-height: 32px;
+    padding: 5px 14px;
+    border: 1px solid var(--line);
+    border-radius: 0;
+    color: var(--text);
+    background: var(--glass);
+  }
+}
+
+/* ── Fenêtres (RGPD) : volet Papier collé à droite, toute la hauteur ── */
+dialog {
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: 460px;
+  max-width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 18px 22px 22px;
+  border: none;
+  border-left: 2px solid var(--encre);
+  border-radius: 0;
+  overflow-y: auto;
+  color: var(--encre);
+  background: var(--paper);
+  line-height: 1.35;
+}
+dialog[open] { animation: drawerIn 0.35s cubic-bezier(0.4, 0, 0, 1); }
+@keyframes drawerIn {
+  from { transform: translateX(24px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+dialog::backdrop { background: rgba(10, 10, 10, 0.45); }
+dialog h2 {
+  margin: 0 -22px 12px;
+  padding: 0 22px 14px;
+  font-size: var(--fs-text);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  border-bottom: 2px solid var(--encre);
+}
+dialog h3 { margin: 20px 0 6px; font-weight: 400; color: var(--cendre); }
+dialog p,
+dialog ul {
+  margin: 0 0 8px;
+  font-family: var(--display);
+  font-size: var(--fs-prose);
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  text-transform: none;
+}
+dialog ul { padding-left: 18px; }
+dialog a { color: var(--encre); text-underline-offset: 3px; }
+dialog form { margin-top: 18px; }
+dialog form button { width: 100%; }

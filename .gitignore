@@ -1,0 +1,8 @@
+# Fichiers système et de travail
+.DS_Store
+Thumbs.db
+desktop.ini
+__pycache__/
+.claude/
+.impeccable/
+settings.local.json

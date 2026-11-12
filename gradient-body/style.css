@@ -1,0 +1,92 @@
+/* Gradient body — mise en page propre à l'outil.
+   Couleurs, typo, panneau et contrôles : ../ui/nordway.css
+   Le rendu occupe tout l'écran, le panneau flotte devant. */
+
+html, body { background: #000; }
+
+/* Rendu sombre : le panneau Papier reste presque opaque pour que l'Encre se lise sur l'aura */
+:root {
+  --glass: rgba(244, 244, 244, 0.92);
+  --blur: 16px;
+}
+
+/* Le rendu occupe tout l'écran, derrière le panneau */
+#gl,
+#overlay {
+  position: fixed;
+  inset: 0;
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+/* Premier plan : blob tracking, au-dessus de l'aura, sous le panneau */
+#overlay { pointer-events: none; }
+
+/* Panneau en verre posé sur le rendu ; H le masque */
+#panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  max-height: calc(100vh - 20px);
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0, 1), transform 0.6s cubic-bezier(0.4, 0, 0, 1), visibility 0.6s;
+}
+body.panel-hidden #panel {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-16px);
+}
+
+/* Vignettes : détourage, blobs (vue selfie) ; le retour caméra vient de nordway.css */
+.previewBox video,
+.previewBox canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.previewBox canvas { image-rendering: pixelated; }
+.previewBox.mirror video,
+.previewBox.mirror canvas { transform: scaleX(-1); }
+
+/* Couleur des taches : petite pastille à droite, comme un interrupteur */
+.check input[type="color"] {
+  flex: none;
+  width: 28px;
+  height: 16px;
+}
+
+/* Étiquettes des taches : une case Papier, texte Encre en capitales,
+   le carré Signal devant le nom (les cadres de détection verts de la campagne) */
+#tags {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.tag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 9px;
+  font-size: var(--fs-small);
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: var(--text);
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(var(--blur));
+  backdrop-filter: blur(var(--blur));
+  border-radius: 0;
+  will-change: transform;
+}
+.tag::before {
+  content: "";
+  flex: none;
+  width: 5px;
+  height: 5px;
+  background: var(--signal);
+  box-shadow: 0 0 0 1px var(--encre);
+}

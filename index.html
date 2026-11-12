@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>NORDWAY Tools</title>
+<meta name="description" content="NORDWAY digital tools: five browser tools and the brand library, to make NORDWAY images for social media." />
+<link rel="icon" href="ui/favicon.png" />
+<link rel="stylesheet" href="ui/site.css" />
+<style>
+  /* ── tête : le wordmark sur toute la largeur, comme la guideline ── */
+  .hero { padding-block: 40px 0; }
+  .hero .word { width: 100%; color: var(--ink); }
+  .hero .lede {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 24px;
+    margin: 32px 0 28px;
+    align-items: end;
+  }
+  .hero .lede p:first-child { font-size: clamp(26px, 3vw, 40px); line-height: 1.05; letter-spacing: -0.03em; max-width: 20ch; }
+  .hero .lede p:last-child { font-size: 17px; }
+  @media (max-width: 760px) { .hero .lede { grid-template-columns: minmax(0, 1fr); } }
+
+  /* ── chapitres : numéro / titre XXL (la guideline) ── */
+  section.ch { border-top: 2px solid var(--line); padding-block: 24px 72px; }
+  .ch-head { display: grid; grid-template-columns: 120px minmax(0, 1fr) auto; gap: 24px; align-items: start; margin-bottom: 36px; }
+  .ch-head .num { font-family: var(--mono); font-size: 13px; padding-top: 8px; }
+  .ch-head h2 { font-size: clamp(44px, 8vw, 112px); }
+  .ch-head .side { text-align: right; padding-top: 8px; }
+  @media (max-width: 760px) { .ch-head { grid-template-columns: minmax(0, 1fr); gap: 6px; } .ch-head .side { text-align: left; } }
+
+  /* ── l'index : le sceau à gauche, la fiche de l'outil visé à droite ── */
+  .index { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+  @media (max-width: 1000px) { .index { grid-template-columns: minmax(0, 1fr); } }
+
+  .seal-nav { position: sticky; top: calc(var(--top-h) + 24px); }
+  .seal-nav svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .seal-nav .geo { fill: none; stroke: var(--ink); stroke-width: 1.4; }
+  .seal-nav .geo-fill { fill: var(--ink); stroke: none; }
+  .seal-nav .laser {
+    stroke: var(--signal);
+    stroke-width: 4;
+    stroke-linecap: square;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+    filter: drop-shadow(0 0 0.5px var(--ink));
+  }
+  .seal-nav .laser.draw { animation: laser 0.28s linear; }
+  @keyframes laser { from { stroke-dashoffset: 1; } }
+  .seal-nav .center { fill: var(--signal); stroke: var(--ink); stroke-width: 1.2; }
+  .seal-nav .node { cursor: pointer; outline: none; }
+  .seal-nav .node .hit { fill: transparent; }
+  .seal-nav .node .pin { fill: var(--paper); stroke: var(--ink); stroke-width: 1.4; transition: fill 0.1s; }
+  .seal-nav .node .no { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; fill: var(--mute); }
+  .seal-nav .node .nm { font-family: var(--display); font-size: 24px; letter-spacing: -0.03em; fill: var(--ink); text-transform: uppercase; }
+  .seal-nav .node .tag { fill: var(--ink); opacity: 0; }
+  .seal-nav .node.on .pin { fill: var(--signal); }
+  .seal-nav .node.on .no { fill: var(--ink); }
+  .seal-nav .node:focus-visible .pin { stroke: var(--signal); stroke-width: 3; }
+  .seal-nav .node.on .nm { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+  .seal-nav .hint { margin-top: 12px; display: flex; justify-content: space-between; gap: 16px; }
+  /* téléphone : le sceau ne garde que les numéros, la fiche juste dessous donne le nom */
+  @media (max-width: 560px) { .seal-nav .node .nm { display: none; } .seal-nav .node .no { font-size: 30px; transform: translateY(34px); } }
+
+  /* fiche : la fiche technique de l'outil (les maquettes B2 : légende, specs, CTA) */
+  .fiche { border-top: 2px solid var(--line); padding-top: 14px; }
+  .fiche .f-top { display: flex; justify-content: space-between; gap: 16px; }
+  .fiche h3 { margin: 10px 0 20px; font-size: clamp(48px, 6vw, 92px); }
+  .fiche .f-body { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); gap: 20px; }
+  @media (max-width: 560px) { .fiche .f-body { grid-template-columns: minmax(0, 1fr); } }
+  .fiche .shot { position: relative; aspect-ratio: 4 / 5; background: var(--panel); overflow: hidden; }
+  .fiche .shot img { width: 100%; height: 100%; object-fit: cover; }
+  /* légendes A–D en pastilles, comme sur les photos produit (seule forme ronde avec le cercle) */
+  .fiche .shot .callout {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink);
+    background: var(--white);
+  }
+  .fiche .desc { font-size: 18px; line-height: 1.25; margin-bottom: 18px; }
+  .spec { margin: 0 0 20px; border-top: 2px solid var(--line); }
+  .spec > div { display: grid; grid-template-columns: 38% minmax(0, 1fr); padding: 9px 0; border-bottom: 1px solid var(--hair); font-family: var(--mono); font-size: 12.5px; }
+  .spec dt { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); padding-top: 1px; }
+  .spec dd { margin: 0; }
+  .fiche .f-text { display: flex; flex-direction: column; }
+  .fiche .cta { margin-top: auto; }
+  .fiche.swap .f-body, .fiche.swap h3 { animation: swap 0.22s linear; }
+  @keyframes swap { from { opacity: 0.2; } }
+
+  /* ── la liste complète : une ligne par outil ── */
+  .list { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--line); }
+  .list a {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1.1fr) minmax(0, 1.4fr) minmax(0, 0.9fr) 56px 24px;
+    gap: 20px;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--hair);
+    text-decoration: none;
+    transition: background-color 0.12s, padding 0.12s;
+  }
+  .list a:hover { background: var(--white); padding-inline: 12px; }
+  .list .n { font-family: var(--mono); font-size: 13px; }
+  .list .name { font-size: clamp(28px, 3vw, 40px); line-height: 0.95; letter-spacing: -0.03em; text-transform: uppercase; }
+  .list .what { font-size: 16px; line-height: 1.25; }
+  .list .thumb { width: 56px; aspect-ratio: 4 / 5; object-fit: cover; background: var(--panel); }
+  .list .go { font-family: var(--mono); justify-self: end; }
+  @media (max-width: 900px) {
+    .list a { grid-template-columns: 40px minmax(0, 1fr) 48px; row-gap: 6px; }
+    .list .what, .list .out { grid-column: 2; }
+    .list .thumb { grid-column: 3; grid-row: 1 / span 3; width: 48px; }
+    .list .go { display: none; }
+  }
+
+  /* ── règles de publication (tirées de la guideline) ── */
+  .rules-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+  @media (max-width: 760px) { .rules-grid { grid-template-columns: minmax(0, 1fr); } }
+  .rules-grid h3 { margin: 0 0 12px; font-family: var(--mono); font-weight: 400; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .rules { list-style: none; padding: 0; margin: 0; counter-reset: r; border-top: 2px solid var(--line); }
+  .rules li { counter-increment: r; display: grid; grid-template-columns: 40px minmax(0, 1fr); padding: 11px 0; border-bottom: 1px solid var(--hair); }
+  .rules li::before { content: counter(r, decimal-leading-zero); font-family: var(--mono); font-size: 12px; padding-top: 4px; }
+  .rules.no li::before { content: "×"; font-size: 16px; padding-top: 0; }
+  /* les quatre formats d'export, à l'échelle les uns des autres (1080 px = 120 px) */
+  .formats { display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-end; margin-top: 48px; }
+  .formats figure { margin: 0; width: calc(var(--w) * 120px / 1080); }
+  .formats .box { border: 2px solid var(--line); display: grid; place-items: center; background: var(--white); }
+  .formats .box span { font-family: var(--mono); font-size: 13px; }
+  .formats figcaption { display: flex; flex-direction: column; gap: 2px; padding-top: 8px; white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <span class="label ink">Digital tools</span>
+    <span class="mark seal" aria-hidden="true"></span>
+    <nav class="end label ink" aria-label="Sections">
+      <a href="#index">Index</a><a href="#tools">Tools</a><a href="#rules">Rules</a><a href="brand-assets/">Brand assets</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <h1 style="margin:0"><span class="mark word" role="img" aria-label="NORDWAY®"></span><span class="label" style="display:block;margin-top:10px">Digital tools — brand toolkit</span></h1>
+    <div class="lede">
+      <p>Make NORDWAY images for social media, right in the browser.</p>
+      <p>Five tools and the brand library, dressed in the identity: posters, loops, mockups and live camera pieces, exported in the feed and story formats. No account, no install; images and camera stay on your computer.</p>
+    </div>
+    <div class="meta">
+      <div><span class="label">Toolkit</span><strong>05 tools + 01 library</strong></div>
+      <div><span class="label">Formats</span><strong>4:5 · 9:16 · 1:1 · A4</strong></div>
+      <div><span class="label">Export</span><strong>PNG · MP4</strong></div>
+      <div><span class="label">Version</span><strong>1.0 · 12.11.2026</strong></div>
+    </div>
+  </div>
+
+  <!-- 01 INDEX : le sceau comme navigation -->
+  <section class="ch" id="index" style="margin-top:56px">
+    <div class="wrap">
+      <div class="ch-head">
+        <span class="num">01</span>
+        <div><h2 class="xxl">Index</h2></div>
+        <span class="side label">The seal, read as a map:<br>six points, six tools</span>
+      </div>
+      <div class="index">
+        <div class="seal-nav">
+          <svg id="seal" viewBox="-330 -300 660 600" role="group" aria-label="Tools on the NORDWAY seal"></svg>
+          <div class="hint label"><span>Hover or tab a point · Enter opens</span><span id="pointer">01 / 06</span></div>
+        </div>
+        <article class="fiche" id="fiche" aria-live="polite">
+          <div class="f-top label"><span id="fKind"></span><span id="fNum"></span></div>
+          <h3 class="xxl" id="fName"></h3>
+          <div class="f-body">
+            <div class="shot"><img id="fImg" src="apercu/image-matrice.jpg" alt="Image matrice, example output" /><span class="callout">A</span></div>
+            <div class="f-text">
+              <p class="desc" id="fDesc"></p>
+              <dl class="spec" id="fSpec"></dl>
+              <a class="cta" id="fGo"><span class="lead"><span class="dot"></span><span id="fGoLabel">Open tool</span></span><span>→</span></a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 TOOLS : la liste complète -->
+  <section class="ch" id="tools">
+    <div class="wrap">
+      <div class="ch-head">
+        <span class="num">02</span>
+        <div><h2 class="xxl">All tools</h2></div>
+        <span class="side label" id="listCount"></span>
+      </div>
+      <ol class="list" id="list"></ol>
+    </div>
+  </section>
+
+  <!-- 03 RULES : ce que la guideline demande avant de publier -->
+  <section class="ch" id="rules">
+    <div class="wrap">
+      <div class="ch-head">
+        <span class="num">03</span>
+        <div><h2 class="xxl">Before you post</h2><p style="margin-top:14px">Four lines from the identity guideline, for every image that leaves these tools.</p></div>
+        <span class="side label">Guideline v0.2</span>
+      </div>
+      <div class="rules-grid">
+        <div>
+          <h3>Always</h3>
+          <ol class="rules">
+            <li>4:5 vertical for the feed, 9:16 for stories and reels. Subject on the central axis.</li>
+            <li>Visible grain, even on product images.</li>
+            <li>One hard light (flash, low sun) or total mist.</li>
+            <li>In motion, the logo only appears at the end, in Signal green.</li>
+          </ol>
+        </div>
+        <div>
+          <h3>Never</h3>
+          <ol class="rules no">
+            <li>Blue sky, saturated colours, postcard panoramas.</li>
+            <li>More than one accent colour: green is the only one, at 4 % of the image at most.</li>
+            <li>Green text on a light background. Green goes as a flat area, a line, or on black.</li>
+            <li>The logo stamped in a corner like a watermark.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="formats" aria-label="Export formats">
+        <figure style="--w:1080"><div class="box" style="aspect-ratio:4/5"><span>4:5</span></div><figcaption class="label"><span style="color:var(--ink)">Feed</span><span>1080 × 1350</span></figcaption></figure>
+        <figure style="--w:1080"><div class="box" style="aspect-ratio:9/16"><span>9:16</span></div><figcaption class="label"><span style="color:var(--ink)">Story · Reel</span><span>1080 × 1920</span></figcaption></figure>
+        <figure style="--w:1080"><div class="box" style="aspect-ratio:1"><span>1:1</span></div><figcaption class="label"><span style="color:var(--ink)">Square</span><span>1080 × 1080</span></figcaption></figure>
+        <figure style="--w:1240"><div class="box" style="aspect-ratio:210/297"><span>A4</span></div><figcaption class="label"><span style="color:var(--ink)">Poster</span><span>1240 × 1754</span></figcaption></figure>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="coord"><span class="mark word" aria-label="NORDWAY"></span><span>Aiguille Dibona</span><span>44°57′45″ N, 6°14′34″ E</span></div>
+  <div class="wrap fine label"><span>NORDWAY® · Digital tools · fictional brand</span><span>[For experimental purposes only]</span></div>
+</footer>
+
+<script>
+// Pour ajouter un outil : une entrée de plus dans TOOLS (dossier = nom du dossier, apercu = image 4:5 dans apercu/).
+// Le sceau a six points ; au-delà de six outils, la liste « All tools » reste la référence.
+const TOOLS = [
+  {
+    dossier: "image-matrice", nom: "Image matrice", kind: "Viewer · WebGL",
+    short: "The brand images as a 2D index, a sphere, a roll, a space or the Mont Blanc.",
+    desc: "The brand images as an endless 2D index, a 3D sphere, a roll, a space, or pinned over the Mont Blanc massif. Steer it by hand through the webcam.",
+    spec: [["Input", "Brand images · your images"], ["Output", "Live view · screen recording"], ["Format", "Full screen"], ["Camera", "Optional · hand control"]],
+  },
+  {
+    dossier: "cairn-generator", nom: "Cairn generator", kind: "Loop · WebGL",
+    short: "A pile of stones turning in a perfect loop, blurred and grainy, under a type layer.",
+    desc: "A pile of split stones that turns in a perfect loop, blurred and grainy, with a type layer on top. Also bead rings and a floating peak.",
+    spec: [["Input", "Text"], ["Output", "PNG · MP4 loop"], ["Format", "4:5 · 9:16 · 1:1 · A4"], ["Camera", "—"]],
+  },
+  {
+    dossier: "gradient-body", nom: "Gradient body", kind: "Live · camera",
+    short: "Your silhouette leaves a grainy aura in the brand colours, tagged in Signal green.",
+    desc: "The webcam cuts out your silhouette and leaves a grainy aura in the brand colours, with Signal tags pinned on the tracked blobs.",
+    spec: [["Input", "Webcam · MP4 video"], ["Output", "Live view · screen recording"], ["Format", "Full screen"], ["Camera", "Yes · body cutout"]],
+  },
+  {
+    dossier: "mockup", nom: "Mockup", kind: "Mockup · video",
+    short: "Your image or screen recording in a phone held in silhouette.",
+    desc: "Your image or screen recording in the screen of a phone held in silhouette: framing, smooth or flick scroll for tall pages.",
+    spec: [["Input", "Image · video"], ["Output", "PNG · MP4"], ["Format", "4:5 · 9:16 · 1:1 · A4"], ["Camera", "—"]],
+  },
+  {
+    dossier: "card-ring", nom: "Card ring", kind: "Poster · camera",
+    short: "A full-width title and a ring of brand images, turned by your hand.",
+    desc: "A poster: a full-width title, a gradient and a spinning ring of brand images, turned by your hand through the webcam.",
+    spec: [["Input", "Text · images"], ["Output", "PNG · MP4"], ["Format", "4:5 · 9:16 · 1:1 · A4"], ["Camera", "Optional · hand control"]],
+  },
+  {
+    dossier: "brand-assets", nom: "Brand assets", kind: "Library",
+    short: "Every file of the identity, sorted as in the ASSETS folder.",
+    desc: "Logo, campaign, graphics, product, objects, motion and type, sorted as in the ASSETS folder. Read the specs, download the originals.",
+    spec: [["Content", "42 files · 7 folders"], ["Output", "Original files"], ["Format", "PNG · JPG · MP4 · TTF"], ["Camera", "—"]],
+    cta: "Open library",
+  },
+];
+const pad2 = (n) => String(n).padStart(2, "0");
+const $ = (id) => document.getElementById(id);
+
+// ── le sceau : cercle, triangle inscrit, trois axes fléchés, trois points ──
+// six points sur le cercle, dans le sens des aiguilles d'une montre depuis le haut :
+// sommets du triangle (haut, bas droite, bas gauche) et points de relais opposés (haut droite, bas, haut gauche)
+const NS = "http://www.w3.org/2000/svg";
+const R = 168, TIP = 34;
+const ANG = [-90, -30, 30, 90, 150, 210];               // en degrés, y vers le bas
+const IS_VERTEX = [true, false, true, false, true, false];
+const P = (deg, r = R) => [Math.cos(deg * Math.PI / 180) * r, Math.sin(deg * Math.PI / 180) * r];
+const svg = $("seal");
+const el = (tag, attrs, parent = svg) => {
+  const n = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+  parent.append(n);
+  return n;
+};
+const geo = el("g", { "aria-hidden": "true" });
+el("circle", { cx: 0, cy: 0, r: R, class: "geo" }, geo);
+const V = [ANG[0], ANG[2], ANG[4]].map((a) => P(a));
+el("polygon", { points: V.map((p) => p.join(",")).join(" "), class: "geo" }, geo);
+// flèche pleine : pointe en (x, y), dirigée selon l'angle a
+const arrow = (x, y, a, s = 9, parent = geo) => {
+  const r = a * Math.PI / 180, b1 = r + 2.7, b2 = r - 2.7;
+  el("polygon", { class: "geo-fill", points: [[x, y], [x + Math.cos(b1) * s, y + Math.sin(b1) * s], [x + Math.cos(b2) * s, y + Math.sin(b2) * s]].map((p) => p.join(",")).join(" ") }, parent);
+};
+// trois axes : du point de relais, à travers le centre, jusqu'à une flèche hors du cercle
+for (const a of [ANG[0], ANG[2], ANG[4]]) {
+  const [ox, oy] = P(a + 180), [tx, ty] = P(a, R + TIP);
+  el("line", { x1: ox, y1: oy, x2: tx, y2: ty, class: "geo" }, geo);
+  arrow(tx, ty, a, 11);
+  // flèche interne, à mi-chemin du centre au sommet
+  const [mx, my] = P(a, R * 0.5);
+  arrow(mx, my, a, 8);
+}
+// sur chaque côté du triangle, deux flèches en aller-retour (la montée et la descente)
+for (let i = 0; i < 3; i++) {
+  const [ax, ay] = V[i], [bx, by] = V[(i + 1) % 3];
+  const dir = Math.atan2(by - ay, bx - ax) * 180 / Math.PI;
+  arrow(ax + (bx - ax) * 0.38, ay + (by - ay) * 0.38, dir + 180, 8);
+  arrow(ax + (bx - ax) * 0.62, ay + (by - ay) * 0.62, dir, 8);
+}
+// les trois points de relais
+for (const a of [ANG[1], ANG[3], ANG[5]]) { const [x, y] = P(a); el("circle", { cx: x, cy: y, r: 5.5, class: "geo-fill" }, geo); }
+
+// ligne de visée (Signal) du point choisi vers le centre, puis le centre
+const laser = el("line", { class: "laser", x1: 0, y1: 0, x2: 0, y2: 0, pathLength: 1 });
+el("circle", { cx: 0, cy: 0, r: 5, class: "center" });
+
+// ── les six points : une case carrée sur le cercle, le numéro et le nom à l'extérieur ──
+const nodes = TOOLS.map((t, i) => {
+  const a = ANG[i];
+  const g = el("a", { class: "node", href: `${t.dossier}/`, "aria-label": `${pad2(i + 1)} ${t.nom}` });
+  const [x, y] = P(a);
+  el("circle", { class: "hit", cx: x, cy: y, r: 34 }, g);
+  el("rect", { class: "pin", x: x - 7, y: y - 7, width: 14, height: 14 }, g);
+  // étiquette : au-delà de la flèche pour les sommets, plus près pour les points
+  const far = IS_VERTEX[i] ? R + TIP + 30 : R + 30;
+  let [lx, ly] = P(a, far);
+  const cos = Math.cos(a * Math.PI / 180);
+  const anchor = Math.abs(cos) < 0.2 ? "middle" : cos > 0 ? "start" : "end";
+  if (a === -90) ly -= 24;                    // au-dessus de la flèche du haut
+  if (a === 90) ly += 30;                     // sous le point du bas
+  const words = t.nom.split(" ");
+  const no = el("text", { class: "no", x: lx, y: ly - (words.length > 1 ? 26 : 22), "text-anchor": anchor }, g);
+  no.textContent = pad2(i + 1);
+  words.forEach((w, k) => {
+    const tx = el("text", { class: "nm", x: lx, y: ly + k * 22, "text-anchor": anchor }, g);
+    tx.textContent = w;
+  });
+  g.addEventListener("pointerenter", () => select(i));
+  g.addEventListener("focus", () => select(i));
+  return g;
+});
+
+// ── la fiche ──
+let current = -1;
+function select(i) {
+  if (i === current) return;
+  current = i;
+  const t = TOOLS[i];
+  nodes.forEach((n, k) => n.classList.toggle("on", k === i));
+  const [x, y] = P(ANG[i]);
+  laser.setAttribute("x1", x); laser.setAttribute("y1", y);
+  laser.classList.remove("draw"); void laser.getBBox(); laser.classList.add("draw");
+  $("pointer").textContent = `${pad2(i + 1)} / ${pad2(TOOLS.length)}`;
+  $("fKind").textContent = t.kind;
+  $("fNum").textContent = `T.${pad2(i + 1)}`;
+  $("fName").textContent = t.nom;
+  $("fDesc").textContent = t.desc;
+  $("fImg").src = `apercu/${t.dossier}.jpg`;
+  $("fImg").alt = `${t.nom}, example output`;
+  $("fSpec").replaceChildren(...t.spec.map(([k, v]) => {
+    const d = document.createElement("div");
+    d.innerHTML = "<dt></dt><dd></dd>";
+    d.firstChild.textContent = k;
+    d.lastChild.textContent = v;
+    return d;
+  }));
+  $("fGo").href = `${t.dossier}/`;
+  $("fGoLabel").textContent = t.cta || "Open tool";
+  const f = $("fiche");
+  f.classList.remove("swap"); void f.offsetWidth; f.classList.add("swap");
+}
+select(0);
+
+// ── la liste ──
+const list = $("list");
+TOOLS.forEach((t, i) => {
+  const li = document.createElement("li");
+  li.innerHTML = `<a><span class="n"></span><span class="name"></span><span class="what"></span><span class="out label"></span><img class="thumb" alt="" loading="lazy" /><span class="go">→</span></a>`;
+  const a = li.firstChild;
+  a.href = `${t.dossier}/`;
+  a.querySelector(".n").textContent = pad2(i + 1);
+  a.querySelector(".name").textContent = t.nom;
+  a.querySelector(".what").textContent = t.short;
+  a.querySelector(".out").textContent = `${t.kind} → ${t.spec[1][1]}`;
+  a.querySelector(".thumb").src = `apercu/${t.dossier}.jpg`;
+  a.addEventListener("pointerenter", () => select(i));
+  list.append(li);
+});
+$("listCount").textContent = `${pad2(TOOLS.length - 1)} tools + 01 library`;
+
+// ── clavier : flèches sur le sceau ──
+svg.addEventListener("keydown", (e) => {
+  if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+  e.preventDefault();
+  const n = (current + (e.key === "ArrowRight" ? 1 : -1) + TOOLS.length) % TOOLS.length;
+  nodes[n].focus();
+});
+</script>
+</body>
+</html>
