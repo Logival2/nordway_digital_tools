@@ -2,7 +2,7 @@
 // NORDWAY Digital tools — interface commune (va avec nordway.css ; repris tel quel de nordway.js des Digital tools,
 // seuls l'interligne du titre et les libellés changent)
 // Chargé en <script defer> avant le script de l'outil, il ne touche qu'à l'affichage :
-// · titre en Nord Pro (SVG, ajusté à la largeur du panneau),
+// · titre en Nord Regular (SVG, ajusté à la largeur du panneau),
 // · volets « + / – » sur les titres de section,
 // · valeur de chaque slider à droite de son libellé, piste remplie jusqu'au curseur,
 // · clic à côté d'une fenêtre (RGPD) pour la fermer.

@@ -1,6 +1,6 @@
 # NORDWAY Digital tools
 
-Five browser tools from *Digital tools* (MULTI-DIGITAL TOOLS), restyled to the NORDWAY identity, plus the brand library. The UX of each tool is unchanged.
+Six browser tools from *Digital tools* (MULTI-DIGITAL TOOLS), restyled to the NORDWAY identity, plus the brand library. The UX of each tool is unchanged.
 
 | N° | Folder | Origin |
 |----|--------|--------|
@@ -9,9 +9,10 @@ Five browser tools from *Digital tools* (MULTI-DIGITAL TOOLS), restyled to the N
 | 03 | `gradient-body/` | tools_gradient_body_001 |
 | 04 | `mockup/` | tools_mockup_000 |
 | 05 | `card-ring/` | tools_DA_cercle_002 |
-| 06 | `brand-assets/` | new: library of the files in `ASSETS/` |
+| 06 | `type-flyer/` | tools_flyer_001 (Flat in black and white only, Metal plate; no Skin or Gloss) |
+| LIB | `brand-assets/` | new: library of the files in `ASSETS/` |
 
-`index.html` at the root is the entry point: the seal works as the navigation (six points, six tools).
+`index.html` at the root is the entry point: the seal works as the navigation (six points, the six tools). The library (Brand assets) is in the list and the header link.
 
 ## Run
 

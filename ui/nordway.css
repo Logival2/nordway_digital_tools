@@ -5,25 +5,26 @@
    Charte (Identity guideline v0.2) :
    · fond Papier #F4F4F4, Encre #0A0A0A ; le vert Signal #00FF26 ne fait que signaler
      (point de l'action d'export, focus clavier, squelette de la main) — jamais du texte sur fond clair
-   · deux familles, une seule graisse : Nord Pro (MingLiU Prop) pour les titres et les phrases,
+   · typo réglée dans les fichiers des polices (fonts/) : ni interlettrage, ni faux gras, ni étirement ajoutés ici
+   · deux familles : Nord (Regular, SemiBold, Mono) pour les titres et les phrases,
      Roboto Mono Regular en capitales pour l'interface et les données
    · aucun arrondi (sauf les cercles), aucune ombre ; filets de 2 px pour la structure, 1 px pour séparer
-   · la hiérarchie se fait par la taille, la casse, l'interlettrage et la famille
+   · la hiérarchie se fait par la taille, la casse et la famille
    ═══════════════════════════════════════════════════════════════════ */
 @font-face {
-  font-family: "Nord Pro";
+  font-family: "Nord Regular";
   src: url("../fonts/Nord_pro_regular.ttf") format("truetype");
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
-  font-family: "Nord Pro SemiBold";
+  font-family: "Nord SemiBold";
   src: url("../fonts/Nord_pro_SemiBold.ttf") format("truetype");
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
-  font-family: "Nord Pro Mono";
+  font-family: "Nord Mono";
   src: url("../fonts/Nord_pro_mono.ttf") format("truetype");
   font-weight: 400;
   font-display: swap;
@@ -48,9 +49,9 @@
   --blanc: #ffffff;     /* cases, champs */
 
   /* ── familles ── */
-  --display: "Nord Pro", "MingLiU Prop", "Courier New", serif;
+  --display: "Nord Regular", serif;
   --mono: "Roboto Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  --sans: var(--mono);  /* les outils parlent de --sans pour l'interface : c'est la mono ici */
+  --sans: var(--display);  /* police par défaut de l'interface : Nord Regular */
   --title: var(--display);
 
   /* ── tailles ── */
@@ -58,9 +59,7 @@
   --fs-text: 11.5px;    /* libellés : mono capitales */
   --fs-small: 10.5px;
   --fs-mono: 11.5px;
-  --fs-prose: 15px;     /* aides : Nord Pro, casse d'origine */
-  --track: 0.06em;
-  --track-mono: 0.02em;
+  --fs-prose: 15px;     /* aides : Nord Regular, casse d'origine */
 
   /* ── surfaces (noms repris de ui_001, que les outils lisent) ── */
   --page: var(--paper);
@@ -91,11 +90,10 @@ html, body {
   padding: 0;
   height: 100%;
   overflow: hidden;
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-size: var(--fs-text);
   font-weight: 400;
   line-height: 1.35;
-  letter-spacing: var(--track);
   text-transform: uppercase;
   color: var(--text);
   background: var(--page);
@@ -111,14 +109,12 @@ body {
 #panelFooter,
 dialog h3 {
   font-size: var(--fs-small);
-  letter-spacing: 0.08em;
 }
-/* Aides : des phrases, en Nord Pro, casse d'origine (le récit) */
+/* Aides : des phrases, en Nord Regular, casse d'origine (le récit) */
 .hint {
   font-family: var(--display);
   font-size: var(--fs-prose);
   line-height: 1.2;
-  letter-spacing: -0.01em;
   text-transform: none;
   text-align: left;
   color: var(--text);
@@ -134,7 +130,6 @@ dialog h3 {
   font-weight: 400;
   font-size: var(--fs-mono);
   line-height: 1.35;
-  letter-spacing: var(--track-mono);
   text-transform: uppercase;
   text-align: left;
   font-variant-numeric: tabular-nums;
@@ -210,7 +205,7 @@ dialog h3 {
 }
 .backLink:hover { text-decoration: underline; text-underline-offset: 3px; }
 
-/* Titre XXL en Nord Pro, une seule graisse : plus de faux gras ; capitales serrées (−4 %), interligne 0,86.
+/* Titre XXL en Nord Regular, tel que dessiné dans la police ; interligne 0,86.
    Le SVG est construit et ajusté à la largeur par nordway.js */
 .toolTitle {
   margin: 18px 0 0;
@@ -223,7 +218,6 @@ dialog h3 {
   width: 100%;
   overflow: visible;
   font-family: var(--display);
-  letter-spacing: -0.04em;
   fill: currentColor;
   stroke: none;
 }
@@ -234,7 +228,6 @@ dialog h3 {
   margin: 12px 0 0;
   padding: 8px 10px;
   font-size: var(--fs-small);
-  letter-spacing: 0.04em;
   text-transform: none;
   color: var(--paper);
   background: var(--encre);
@@ -267,7 +260,6 @@ dialog h3 {
   padding: 10px var(--pad) 6px;
   font-size: var(--fs-text);
   font-weight: 400;
-  letter-spacing: 0.08em;
   cursor: pointer;
   user-select: none;
 }
@@ -358,7 +350,6 @@ dialog button {
   margin: 0;
   padding: 0 16px;
   font-size: 12px;
-  letter-spacing: 0.1em;
   text-align: left;
   color: var(--on-text);
   border: none;
@@ -368,7 +359,7 @@ dialog button {
 #panel button.primary::after,
 #rightPanel button.primary::after,
 #panel button.cta::after,
-#rightPanel button.cta::after { content: "→"; letter-spacing: 0; }
+#rightPanel button.cta::after { content: "→";}
 #panel button.primary:not(:disabled):hover,
 #rightPanel button.primary:not(:disabled):hover,
 #panel button.cta:not(:disabled):hover,
@@ -450,7 +441,6 @@ dialog button {
   min-height: 56px;
   padding: 0 14px;
   font-size: 12px;
-  letter-spacing: 0.1em;
   text-align: left;
   color: var(--on-text);
   border: none;
@@ -515,7 +505,6 @@ textarea {
   padding: 8px 10px;
   font-family: var(--mono);
   font-size: 12px;
-  letter-spacing: 0.02em;
   line-height: 1.35;
 }
 select {
@@ -611,7 +600,6 @@ option, optgroup { text-transform: uppercase; color: #0a0a0a; background: #fff; 
     padding: 2px 10px;
     font-family: var(--mono);
     font-size: var(--fs-text);
-    letter-spacing: var(--track);
     text-transform: uppercase;
     color: var(--text);
     border-radius: 0;
@@ -682,7 +670,6 @@ select.uiMenuSource { display: none !important; }
   overscroll-behavior: contain;
   font-family: var(--mono);
   font-size: var(--fs-text);
-  letter-spacing: var(--track);
   text-transform: uppercase;
   color: var(--text);
   border: 1px solid var(--line);
@@ -920,13 +907,11 @@ canvas.camPreview {
   font-size: 56px;
   font-weight: 400;
   line-height: 0.86;
-  letter-spacing: -0.04em;
 }
 #desktopOnly p:not(.eyebrow) {
   margin: 0;
   font-family: var(--display);
   font-size: var(--fs-prose);
-  letter-spacing: -0.01em;
   text-transform: none;
 }
 
@@ -1016,7 +1001,6 @@ dialog h2 {
   padding: 0 22px 14px;
   font-size: var(--fs-text);
   font-weight: 400;
-  letter-spacing: 0.08em;
   border-bottom: 2px solid var(--encre);
 }
 dialog h3 { margin: 20px 0 6px; font-weight: 400; color: var(--cendre); }
@@ -1025,7 +1009,6 @@ dialog ul {
   margin: 0 0 8px;
   font-family: var(--display);
   font-size: var(--fs-prose);
-  letter-spacing: -0.01em;
   line-height: 1.25;
   text-transform: none;
 }
@@ -1057,7 +1040,7 @@ dialog.nwPicker[open] { display: grid; animation: nwpIn 0.18s linear; }
   padding: 12px 16px;
 }
 .nwpHead { border-bottom: 2px solid var(--encre); }
-.nwpHead > span { flex: none; letter-spacing: 0.08em; }
+.nwpHead > span { flex: none;}
 .nwpHead .nwpFilters { flex: 1; min-width: 0; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
 .nwPicker button {
   min-height: 34px;
@@ -1124,7 +1107,7 @@ dialog.nwPicker[open] { display: grid; animation: nwpIn 0.18s linear; }
   background: var(--signal);
   box-shadow: 0 0 0 1px var(--encre);
 }
-.nwpCap { display: block; margin-top: 6px; line-height: 1.4; font-size: var(--fs-small); letter-spacing: 0.04em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.nwpCap { display: block; margin-top: 6px; line-height: 1.4; font-size: var(--fs-small);overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .nwpFoot { border-top: 2px solid var(--encre); }
 .nwpInfo { flex: 1; color: var(--cendre); }
 .nwPicker .nwpGo {

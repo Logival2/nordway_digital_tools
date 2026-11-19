@@ -3,7 +3,7 @@
    Même charte que nordway.css : la fiche technique de 1080 réduite à l'écran,
    colonne unique, marges 24 px, filets 2 px, aucun arrondi, le Signal seulement là où il signale.
    ═══════════════════════════════════════════════════════════════════ */
-@font-face { font-family: "Nord Pro"; src: url("../fonts/Nord_pro_regular.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "Nord Regular"; src: url("../fonts/Nord_pro_regular.ttf") format("truetype"); font-display: swap; }
 @font-face { font-family: "Roboto Mono"; src: url("../fonts/RobotoMono-Variable.ttf") format("truetype"); font-weight: 100 700; font-display: swap; }
 
 :root {
@@ -16,7 +16,7 @@
   --panel: #e8e8e6;
   --white: #ffffff;
   --signal: #00ff26;
-  --display: "Nord Pro", "MingLiU Prop", "Courier New", serif;
+  --display: "Nord Regular", serif;
   --mono: "Roboto Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --gutter: 24px;
   --top-h: 56px;
@@ -31,7 +31,6 @@ body {
   font-family: var(--display);
   font-size: 17px;
   line-height: 1.4;
-  letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
 }
 img, video { display: block; max-width: 100%; }
@@ -48,14 +47,13 @@ p { margin: 0; max-width: 62ch; }
 }
 
 /* utilitaires typo */
-.label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); }
+.label { font-family: var(--mono); font-size: 11px;text-transform: uppercase; color: var(--mute); }
 .label.ink { color: var(--ink); }
 .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 .xxl {
   margin: 0;
   font-family: var(--display);
   font-weight: 400;
-  letter-spacing: -0.04em;
   line-height: 0.86;
   text-transform: uppercase;
   text-wrap: balance;
@@ -98,7 +96,7 @@ p { margin: 0; max-width: 62ch; }
   border-top: 2px solid var(--line);
 }
 .meta > div { padding: 12px 12px 0 0; min-width: 0; }
-.meta strong { display: block; margin-top: 4px; font-family: var(--mono); font-weight: 400; font-size: 13px; letter-spacing: 0.02em; }
+.meta strong { display: block; margin-top: 4px; font-family: var(--mono); font-weight: 400; font-size: 13px;}
 @media (max-width: 720px) { .meta { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 8px; } }
 
 /* bandeau coordonnées : micro-logo Signal · lieu · GPS, sur Encre (élément graphique de la charte) */
@@ -112,7 +110,6 @@ p { margin: 0; max-width: 62ch; }
   color: var(--signal);
   font-family: var(--mono);
   font-size: 12px;
-  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 .coord .word { height: 13px; width: 57px; background-image: url("wordmark-signal.png"); }
@@ -129,7 +126,6 @@ p { margin: 0; max-width: 62ch; }
   padding: 0 16px;
   font-family: var(--mono);
   font-size: 12px;
-  letter-spacing: 0.08em;
   text-transform: uppercase;
   text-decoration: none;
   color: var(--ink);
@@ -149,7 +145,6 @@ p { margin: 0; max-width: 62ch; }
   padding: 0 20px;
   font-family: var(--mono);
   font-size: 13px;
-  letter-spacing: 0.1em;
   text-transform: uppercase;
   text-decoration: none;
   color: var(--paper);
@@ -173,7 +168,6 @@ p { margin: 0; max-width: 62ch; }
   padding: 0 14px;
   font-family: var(--mono);
   font-size: 11.5px;
-  letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
   align-items: center;

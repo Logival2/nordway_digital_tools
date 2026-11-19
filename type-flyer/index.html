@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Type flyer — NORDWAY Tools</title>
+<!-- interface NORDWAY (charte : Papier / Encre, Nord + Roboto Mono), puis la mise en page propre à l'outil.
+     Repris de tools_flyer_001 des Digital tools : même mise en page ; rendus Flat (noir et blanc seulement) et Metal plate. -->
+<link rel="icon" href="../ui/favicon.png" />
+<link rel="stylesheet" href="../ui/nordway.css" />
+<link rel="stylesheet" href="style.css" />
+<script defer src="../ui/nordway.js"></script>
+</head>
+<body data-mobile="ok" data-layout="panels">
+
+<!-- Panneau latéral (paramètres) -->
+<aside id="panel">
+
+  <!-- En-tête : retour à l'accueil NORDWAY, titre (dessiné en Nord Regular par nordway.js) -->
+  <header id="panelHead">
+    <p class="eyebrow"><a class="badge backLink" href="../" title="Back to NORDWAY Tools">← NORDWAY Tools</a></p>
+    <h1 class="toolTitle">Type flyer</h1>
+  </header>
+
+  <!-- Textes : titre (collé en haut, d'une marge à l'autre), milieu, bas.
+       Mise en page fixe ; une police de la marque par bloc (les menus sont remplis depuis FONTS). -->
+  <div class="section">
+    <h2>Text</h2>
+    <div class="row">
+      <label for="titleFont">Title font</label>
+      <select id="titleFont" class="fontSelect"></select>
+    </div>
+    <textarea id="titleInput" rows="3" maxlength="400" placeholder="Title, one line per row">MOUNTAINS
+EXIST TO BE
+CHALLENGED.</textarea>
+    <div class="row">
+      <label for="middleFont">Middle font</label>
+      <select id="middleFont" class="fontSelect"></select>
+    </div>
+    <textarea id="middleInput" rows="1" maxlength="200" placeholder="Middle">→ NORDWAY ←</textarea>
+    <div class="row">
+      <label for="bottomFont">Bottom font</label>
+      <select id="bottomFont" class="fontSelect"></select>
+    </div>
+    <textarea id="bottomInput" rows="2" maxlength="400" placeholder="Bottom">Aiguille Dibona
+44°57′45″ N, 6°14′34″ E</textarea>
+  </div>
+
+  <!-- Rendu : à plat (noir et blanc), ou plaque de métal emboutie (WebGL, metal.js) -->
+  <div class="section">
+    <h2>Render</h2>
+    <div class="row">
+      <label for="renderSelect">Style</label>
+      <select id="renderSelect" class="asPills">
+        <option value="flat">Flat</option>
+        <option value="metal" selected>Metal plate</option>
+      </select>
+    </div>
+    <!-- métal : relief, profondeur, arrondi, lumière, brillance -->
+    <div id="metalControls">
+      <div class="row">
+        <label for="reliefSelect">Relief</label>
+        <select id="reliefSelect" class="asPills">
+          <option value="deboss" selected>Debossed</option>
+          <option value="emboss">Embossed</option>
+        </select>
+      </div>
+      <div class="row"><label for="depthSlider" title="How far the letters are pressed">Depth</label><input id="depthSlider" type="range" min="0" max="1" step="0.01" value="0.25" /></div>
+      <div class="row"><label for="softSlider" title="Width of the rounded edge">Softness</label><input id="softSlider" type="range" min="0" max="1" step="0.01" value="0.41" /></div>
+      <div class="row"><label for="lightSlider" title="Direction of the light, in degrees">Light</label><input id="lightSlider" type="range" min="0" max="360" step="1" value="95" /></div>
+      <div class="row"><label for="shineSlider" title="Satin to polished">Shine</label><input id="shineSlider" type="range" min="0" max="1" step="0.01" value="0.6" /></div>
+      <p class="hint" id="metalInfo">Rendered with WebGL in your browser.</p>
+    </div>
+    <!-- à plat : noir et blanc seulement ; Invert passe en blanc sur noir -->
+    <div id="flatControls" hidden>
+      <div class="btnRow">
+        <button id="invertBtn" type="button" title="Black on white ↔ white on black">Invert</button>
+      </div>
+      <p class="hint">Black and white only.</p>
+    </div>
+  </div>
+
+  <footer id="panelFooter">
+    <button id="resetBtn" type="button">Reset</button>
+    <button id="privacyBtn" type="button">Privacy · GDPR</button>
+  </footer>
+</aside>
+
+<!-- Notice de confidentialité (RGPD) -->
+<dialog id="privacyDialog" aria-labelledby="privacyTitle">
+  <h2 id="privacyTitle">Privacy · GDPR</h2>
+
+  <h3>Data controller</h3>
+  <p>Valentin Maynadié — contact: <a href="mailto:valentinmaynadie@gmail.com">valentinmaynadie@gmail.com</a></p>
+
+  <h3>Texts and exports</h3>
+  <p>What you type stays in your browser and disappears when you close the page. PNG files are made locally.</p>
+
+  <h3>Cookies and tracking</h3>
+  <p>This site uses no cookies, no analytics, no user accounts and no third-party service: fonts are served with the page.</p>
+
+  <h3>Your rights</h3>
+  <p>This site keeps no personal data. For any question about your rights (access, rectification, erasure, objection), write to the address above. You can also contact the CNIL, the French data protection authority (cnil.fr).</p>
+
+  <form method="dialog">
+    <button type="submit">Close</button>
+  </form>
+</dialog>
+
+<!-- Zone principale : l'affiche -->
+<div id="main">
+  <canvas id="scene" data-crop hidden></canvas>
+  <canvas id="metalScene" data-crop></canvas>
+</div>
+
+<!-- Panneau de droite, calé en bas : format de l'affiche, export -->
+<aside id="rightPanel">
+  <div id="formatButtons">
+    <button type="button" data-format="din">A4</button>
+    <button type="button" data-format="square">1:1</button>
+    <button type="button" data-format="portrait">4:5</button>
+    <button type="button" data-format="story">9:16</button>
+  </div>
+  <p id="formatInfo"></p>
+  <div id="exportRow">
+    <button id="exportBtn" type="button">Export PNG</button>
+  </div>
+</aside>
+
+<script type="module">
+import { createMetal } from "./metal.js";
+const mainEl = document.getElementById("main");
+const scene  = document.getElementById("scene");
+const metalScene = document.getElementById("metalScene");
+const $ = (id) => document.getElementById(id);
+const formatButtons = Array.from(document.querySelectorAll("#formatButtons button"));
+const formatInfo = $("formatInfo");
+const panelFields = Array.from(document.querySelectorAll("#panel input, #panel textarea, #panel select"));
+
+// Polices de la marque (déclarées par ../ui/nordway.css, dossier ../fonts), au choix pour chacun des trois blocs.
+// Nord Mono reste en capitales ; la typo (interlettrage, graisse, chasse) se règle dans les fichiers des polices.
+const FONTS = {
+  "Nord Regular":  { label: "NORD REGULAR" },
+  "Nord SemiBold": { label: "NORD SEMIBOLD" },
+  "Nord Mono":     { label: "NORD MONO", upper: true },
+  "Roboto Mono":   { label: "ROBOTO MONO" },
+};
+const DEFAULT_FONT = "Nord SemiBold";
+for (const select of document.querySelectorAll(".fontSelect")) {
+  for (const [name, { label }] of Object.entries(FONTS)) {
+    select.add(new Option(label ?? name, name, name === DEFAULT_FONT));
+  }
+}
+
+// Au rechargement, le navigateur restaure les anciens réglages dans les champs :
+// on repart toujours des valeurs écrites dans le HTML (sinon un nouveau défaut ne s'applique pas)
+function resetFields() {
+  for (const el of panelFields) {
+    if (el.type === "checkbox") el.checked = el.defaultChecked;
+    else if (el.tagName === "SELECT") el.value = (Array.from(el.options).find((o) => o.defaultSelected) ?? el.options[0]).value;
+    else el.value = el.defaultValue;
+  }
+  inverted = false;
+}
+
+// À plat : noir et blanc seulement — noir sur blanc, ou blanc sur noir (Invert)
+let inverted = false;
+const flatColors = () => (inverted ? { bg: "#000000", ink: "#ffffff" } : { bg: "#ffffff", ink: "#000000" });
+resetFields();
+
+for (const name of Object.keys(FONTS)) {
+  document.fonts.load(`400 100px "${name}"`).then(() => update()).catch((err) => {
+    console.error(`Could not load the ${name} font:`, err);
+  });
+}
+// Police du bloc en cours de dessin (choisie par setType)
+let fontName = DEFAULT_FONT;
+const font = () => FONTS[fontName];
+
+// Formats d'affiche : taille réelle d'export en px
+const FORMATS = {
+  portrait: { w: 1080, h: 1350 }, // 4:5 portrait Instagram
+  din:      { w: 1240, h: 1754 }, // DIN A4 portrait (1:√2), 150 dpi
+  square:   { w: 1080, h: 1080 }, // 1:1
+  story:    { w: 1080, h: 1920 }, // 9:16 story
+};
+let currentFormat = "portrait";
+
+// Repère de dessin : le PETIT côté vaut toujours 800 unités, quel que soit le format.
+const SCENE_SHORT_SIDE = 800;
+let sceneW = 800;
+let sceneH = 1000;
+let ctx = scene.getContext("2d"); // remplacé le temps d'un export PNG
+let pixelScale = 1;               // pixels physiques par unité du repère
+const SCENE_MARGIN = 40;          // marge autour de l'affiche à l'écran, en px CSS
+
+function applyFormat(key) {
+  currentFormat = key;
+  const { w, h } = FORMATS[key];
+  const scale = SCENE_SHORT_SIDE / Math.min(w, h);
+  sceneW = w * scale;
+  sceneH = h * scale;
+  formatButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.format === key));
+  formatInfo.textContent = `${w} × ${h} px`;
+  resizeScene();
+}
+
+function resizeScene() {
+  const maxW = mainEl.clientWidth - SCENE_MARGIN * 2;
+  const maxH = mainEl.clientHeight - SCENE_MARGIN * 2;
+  const k = Math.min(maxW / sceneW, maxH / sceneH);
+  const displayW = sceneW * k;
+  const displayH = sceneH * k;
+  scene.style.width = displayW + "px";
+  scene.style.height = displayH + "px";
+  // buffer = pixels physiques affichés, pour des lettres nettes
+  const dpr = window.devicePixelRatio || 1;
+  scene.width = Math.round(displayW * dpr);
+  scene.height = Math.round(displayH * dpr);
+  pixelScale = scene.width / sceneW;
+  metalScene.style.width = scene.style.width;
+  metalScene.style.height = scene.style.height;
+  metalScene.width = scene.width;
+  metalScene.height = scene.height;
+  update();
+}
+
+// ── Dessin ──
+// Typo et mise en page fixes, reprises de l'outil d'origine
+const MARGIN_PX = 20;        // marge tout autour, en px de l'image exportée
+const TITLE_LEADING = 0.95;  // interligne du titre (× sa taille)
+const TITLE_MAX = 1.2;       // taille maximale du titre (× la taille de référence) : un mot court ne devient pas énorme
+const MIDDLE_RATIO = 0.45;   // taille du milieu (× la taille de référence)
+const MIDDLE_POS = 0.755;    // ligne de base du milieu (× la hauteur de l'affiche)
+const BOTTOM_RATIO = 0.17;   // taille du bas (× la taille de référence)
+const BOTTOM_LEADING = 1.25; // interligne du bas (× sa taille)
+const TITLE_TOP = 0.07;      // marge au-dessus du titre (× la hauteur de la page)
+
+// Lignes d'un bloc, dans la police choisie pour lui (à appeler après setType)
+const linesOf = (id) => (font().upper ? $(id).value.toUpperCase() : $(id).value).split("\n");
+const inkWidth = (m) => m.actualBoundingBoxLeft + m.actualBoundingBoxRight;
+
+// Une ligne centrée sur cx d'après le contour réel des lettres, remplie telle que dessinée dans la police.
+function drawLine(line, cx, baseline) {
+  if (!line.trim()) return;
+  const m = ctx.measureText(line);
+  const x = -inkWidth(m) / 2 + m.actualBoundingBoxLeft;
+  ctx.save();
+  ctx.translate(cx, baseline);
+  ctx.fillText(line, x, 0);
+  ctx.restore();
+}
+
+function setType(size, selectId) {
+  fontName = $(selectId).value;
+  ctx.font = `${size}px "${fontName}", serif`;
+  ctx.letterSpacing = "0px";
+}
+
+// colors : { bg, ink } imposées (masque du métal : texte blanc sur noir), sinon le noir et blanc du rendu à plat
+function draw(colors = flatColors()) {
+  ctx.setTransform(pixelScale, 0, 0, pixelScale, 0, 0);
+  ctx.fillStyle = colors.bg;
+  ctx.fillRect(0, 0, sceneW, sceneH);
+
+  ctx.fillStyle = colors.ink;
+  ctx.strokeStyle = colors.ink;
+  ctx.lineJoin = "round";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
+  const { w, h } = FORMATS[currentFormat];
+  const margin = (MARGIN_PX * SCENE_SHORT_SIDE) / Math.min(w, h);
+  const cx = sceneW / 2;
+
+  // Titre : la ligne la plus large va d'une marge à l'autre 
+  // sans dépasser TITLE_MAX × la taille de référence ; le haut des capitales de
+  // la 1re ligne est à TITLE_TOP de la hauteur de la page.
+  // Taille de référence : celle du titre par défaut, dans la police du titre.
+  // Le milieu et le bas en dépendent, pas du texte tapé : ils ne bougent pas pendant la saisie du titre.
+  const REF = 100;
+  setType(REF, "titleFont");
+  const fitSize = (lines) => {
+    const widest = Math.max(0, ...lines.map((l) => inkWidth(ctx.measureText(l))));
+    return widest > 0 ? (REF * (sceneW - margin * 2)) / widest : REF;
+  };
+  const casing = (text) => (font().upper ? text.toUpperCase() : text);
+  const refSize = fitSize(casing($("titleInput").defaultValue).split("\n"));
+  const title = linesOf("titleInput");
+  const titleSize = Math.min(fitSize(title), refSize * TITLE_MAX);
+  const firstLine = title.find((l) => l.trim());
+  if (firstLine) {
+    setType(titleSize, "titleFont");
+    const top = sceneH * TITLE_TOP + ctx.measureText(firstLine).actualBoundingBoxAscent;
+    title.forEach((line, i) => drawLine(line, cx, top + i * titleSize * TITLE_LEADING));
+  }
+
+  // Milieu : la ligne de base du bloc à MIDDLE_POS de la hauteur
+  const middleSize = refSize * MIDDLE_RATIO;
+  setType(middleSize, "middleFont");
+  const middle = linesOf("middleInput");
+  middle.forEach((line, i) =>
+    drawLine(line, cx, sceneH * MIDDLE_POS - (middle.length - 1 - i) * middleSize * 1.1));
+
+  // Bas : dernière ligne posée sur la marge basse
+  const bottomSize = refSize * BOTTOM_RATIO;
+  setType(bottomSize, "bottomFont");
+  const bottom = linesOf("bottomInput");
+  const lastBaseline = sceneH - margin;
+  bottom.forEach((line, i) =>
+    drawLine(line, cx, lastBaseline - (bottom.length - 1 - i) * bottomSize * BOTTOM_LEADING));
+}
+
+// ── Plaque de métal : l'affiche redessinée en blanc sur noir sert de relief (metal.js) ──
+let metal = null;
+try {
+  metal = createMetal(metalScene);
+} catch (err) {
+  console.error("Metal render unavailable:", err);
+}
+if (!metal) {
+  // sans WebGL2 : l'affiche à plat devient le rendu par défaut
+  const flat = $("renderSelect").querySelector('option[value="flat"]');
+  flat.defaultSelected = true;
+  $("renderSelect").value = "flat";
+  $("renderSelect").querySelector('option[value="metal"]').disabled = true;
+  $("metalInfo").textContent = "Your browser cannot draw the metal plate (WebGL2 needed).";
+}
+// le relief est calculé à 2 × la taille de l'image (arêtes nettes), sans dépasser 4096 px de côté
+const MASK_SUPERSAMPLE = 2;
+const MASK_MAX = 4096;
+const metalOn = () => metal && $("renderSelect").value === "metal";
+// acier brossé éclairé par le haut, arêtes fines (texture/)
+const PLATE_URL = `texture/${encodeURIComponent("Panneau d’acier brossé dégradé.png")}`;
+const metalOptions = () => ({
+  material: "metal",
+  relief: $("reliefSelect").value,
+  bg: "#000000",
+  ink: "#ffffff",
+  depth: Number($("depthSlider").value),
+  softness: Number($("softSlider").value),
+  light: Number($("lightSlider").value),
+  shine: Number($("shineSlider").value),
+});
+// le masque à la taille voulue, sans toucher à l'affiche à l'écran
+function drawMask(w, h) {
+  const k = Math.min(MASK_SUPERSAMPLE, MASK_MAX / Math.max(w, h));
+  const mask = document.createElement("canvas");
+  mask.width = Math.round(w * k);
+  mask.height = Math.round(h * k);
+  const saved = { ctx, pixelScale };
+  ctx = mask.getContext("2d");
+  pixelScale = mask.width / sceneW;
+  try {
+    draw({ bg: "#000", ink: "#fff" });
+  } finally {
+    ({ ctx, pixelScale } = saved);
+  }
+  return mask;
+}
+// la photo de l'acier, décodée une fois ; le métal la reçoit dès qu'elle est prête
+let plateRequested = false;
+function loadPlate() {
+  plateRequested = true;
+  const img = new Image();
+  img.src = PLATE_URL;
+  img.decode().then(() => {
+    try {
+      metal.setPlate(img);
+      $("metalInfo").textContent = "Rendered with WebGL in your browser.";
+    } catch (err) {
+      console.error("Texture unusable:", err);
+      $("metalInfo").textContent = "This texture cannot be read when the tool is opened as a local file: open it from its web address.";
+    }
+    update();
+  }).catch((err) => {
+    console.error("Could not load the texture:", err);
+    $("metalInfo").textContent = "Could not load the steel texture.";
+  });
+}
+
+let metalFrame = 0;
+function renderMetal() {
+  metalFrame = 0;
+  if (metalOn()) metal.render(drawMask(metalScene.width, metalScene.height), metalOptions());
+}
+
+// Tout changement redessine l'affiche à plat et, en mode métal, la plaque (une fois par image au plus)
+function update() {
+  const on = !!metalOn();
+  scene.hidden = on;
+  metalScene.hidden = !on;
+  $("metalControls").hidden = !on;
+  $("flatControls").hidden = on;
+  draw();
+  if (metal && !plateRequested) loadPlate();
+  if (on && !metalFrame) metalFrame = requestAnimationFrame(renderMetal);
+}
+
+// ── Contrôles ──
+for (const el of panelFields) el.addEventListener("input", update);
+
+$("invertBtn").addEventListener("click", () => {
+  inverted = !inverted;
+  update();
+});
+
+formatButtons.forEach((btn) => btn.addEventListener("click", () => applyFormat(btn.dataset.format)));
+window.addEventListener("resize", resizeScene);
+
+$("resetBtn").addEventListener("click", () => {
+  resetFields();
+  applyFormat("portrait");
+});
+
+const privacyDialog = $("privacyDialog");
+$("privacyBtn").addEventListener("click", () => privacyDialog.showModal());
+
+// ── Export PNG : la même affiche, redessinée à la taille réelle du format ──
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+$("exportBtn").addEventListener("click", () => {
+  const { w, h } = FORMATS[currentFormat];
+  if (metalOn()) {
+    // la plaque est recalculée à la taille réelle du format, puis l'écran revient à sa taille
+    const shown = [metalScene.width, metalScene.height];
+    metalScene.width = w;
+    metalScene.height = h;
+    metal.render(drawMask(w, h), metalOptions());
+    metalScene.toBlob((blob) => {
+      downloadBlob(blob, `nordway-flyer-metal-${currentFormat}-${w}x${h}.png`);
+      [metalScene.width, metalScene.height] = shown;
+      renderMetal();
+    }, "image/png");
+    return;
+  }
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const saved = { ctx, pixelScale };
+  ctx = canvas.getContext("2d");
+  pixelScale = w / sceneW;
+  try {
+    draw();
+  } finally {
+    ({ ctx, pixelScale } = saved);
+  }
+  canvas.toBlob((blob) => downloadBlob(blob, `nordway-flyer-${inverted ? "white-on-black" : "black-on-white"}-${currentFormat}-${w}x${h}.png`), "image/png");
+});
+
+applyFormat(currentFormat);
+</script>
+</body>
+</html>

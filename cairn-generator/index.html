@@ -30,9 +30,9 @@
     <div class="row">
       <label for="fontSelect">Font</label>
       <select id="fontSelect" class="asPills">
-        <option value="Nord Pro" selected>Nord Pro</option>
-        <option value="Nord Pro SemiBold">SemiBold</option>
-        <option value="MingLiU-01">Mono</option>
+        <option value="Nord Regular">NORD REGULAR</option>
+        <option value="Nord SemiBold" selected>NORD SEMIBOLD</option>
+        <option value="Nord Mono">NORD MONO</option>
       </select>
     </div>
     <div class="row"><label for="typeSizeSlider" title="Height of the letters, in fraction of the page">Size</label><input id="typeSizeSlider" type="range" min="0.03" max="0.4" step="0.005" value="0.09" /></div>
@@ -253,9 +253,9 @@ const SCENE_MARGIN = 40;
 
 // ── Polices du calque typo ──
 const FONT_FILES = {
-  "Nord Pro": "../fonts/Nord_pro_regular.ttf",
-  "Nord Pro SemiBold": "../fonts/Nord_pro_SemiBold.ttf",
-  "MingLiU-01": "../fonts/Nord_pro_mono.ttf",
+  "Nord Regular": "../fonts/Nord_pro_regular.ttf",
+  "Nord SemiBold": "../fonts/Nord_pro_SemiBold.ttf",
+  "Nord Mono": "../fonts/Nord_pro_mono.ttf",
 };
 for (const [name, url] of Object.entries(FONT_FILES)) {
   new FontFace(name, `url('${encodeURI(url)}')`).load().then((face) => {
@@ -735,7 +735,7 @@ function passTargets(w, h) {
   return t;
 }
 
-// ── Adresses des boutiques (reprises de 3D kinetic type 002) : deux blocs en MingLiU, dans le calque typo ──
+// ── Adresses des boutiques (reprises de 3D kinetic type 002) : deux blocs en Nord Mono, dans le calque typo ──
 const STORE_TEXT = `FRANCE
 Summit Line Running Co.
 112 Rue du Docteur Paccard 74400
@@ -785,7 +785,6 @@ const BG = {
   body: 9.8,           // taille du texte courant
   title: 11,           // taille des pays (en capitales)
   tracking: 0,         // interlettrage (en fraction de la taille) : 0 = celui de la police
-  embolden: 0.05,      // contour arrondi des titres (faux gras), en fraction de leur taille
   titlePitch: 11.3,    // du titre à la première ligne
   bodyPitch: 10.35,    // d'une ligne à la suivante
   entryPitch: 21,      // de la dernière ligne au titre suivant
@@ -806,14 +805,10 @@ function drawStoreBlocks(ctx, w, h) {
   const cx = sceneW / 2;
   const line = (text, size, y, bold) => {
     const spacing = size * BG.tracking;
-    ctx.font = `${size}px "MingLiU-01", serif`;
+    ctx.font = `${size}px "Nord Mono", serif`;
     ctx.letterSpacing = `${spacing}px`;
     const x = cx - spacing / 2; // le canvas compte l'espacement après la dernière lettre
     ctx.fillText(text, x, y);
-    if (bold) {
-      ctx.lineWidth = size * BG.embolden;
-      ctx.strokeText(text, x, y);
-    }
   };
   for (const block of BG.blocks) {
     let y = block.y * sceneH;
@@ -828,7 +823,7 @@ function drawStoreBlocks(ctx, w, h) {
     });
   }
   // mention centrée en bas de page, comme dans 3D kinetic type
-  ctx.font = `11px "MingLiU-01", serif`;
+  ctx.font = `11px "Nord Mono", serif`;
   ctx.letterSpacing = "0px";
   ctx.textBaseline = "bottom";
   ctx.fillText("[For experimental purposes only]", cx, sceneH - 10 - 6);
@@ -840,7 +835,6 @@ const typeCanvas = document.createElement("canvas");
 const tctx = typeCanvas.getContext("2d");
 const typeTex = gl.createTexture();
 let typeKey = "";
-const MINGLIU_EMBOLDEN = 0.025; // faux gras arrondi de MingLiU, comme dans les autres outils
 function updateTypeTexture(w, h) {
   const key = [w, h, controls.text.value, controls.font.value, num("typeSize"), controls.typeColor.value, on("stores"), on("typeOn")].join("|");
   if (key === typeKey) return;
@@ -848,10 +842,10 @@ function updateTypeTexture(w, h) {
   typeCanvas.width = w;
   typeCanvas.height = h;
   tctx.clearRect(0, 0, w, h);
-  const mingliu = controls.font.value === "MingLiU-01";
+  const mingliu = controls.font.value === "Nord Mono";
   const lines = (mingliu ? controls.text.value.toUpperCase() : controls.text.value).split("\n");
   let size = num("typeSize") * h;
-  const font = (s) => `${s}px "${controls.font.value}", "Nord Pro", serif`;
+  const font = (s) => `${s}px "${controls.font.value}", "Nord Regular", serif`;
   tctx.font = font(size);
   // jamais plus large que la page (marge de 6 %)
   const widest = Math.max(1, ...lines.map((l) => tctx.measureText(l).width));
@@ -860,13 +854,11 @@ function updateTypeTexture(w, h) {
   tctx.textAlign = "center";
   tctx.textBaseline = "alphabetic";
   tctx.lineJoin = "round";
-  tctx.lineWidth = size * MINGLIU_EMBOLDEN;
   const capH = tctx.measureText("H").actualBoundingBoxAscent;
   const lh = size * 0.9;
   if (on("typeOn")) lines.forEach((line, i) => {
     const y = h / 2 + (i - (lines.length - 1) / 2) * lh + capH / 2;
     tctx.fillText(line, w / 2, y);
-    if (mingliu) tctx.strokeText(line, w / 2, y);
   });
   if (on("stores")) {
     tctx.fillStyle = tctx.strokeStyle = controls.typeColor.value;

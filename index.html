@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>NORDWAY Tools</title>
-<meta name="description" content="NORDWAY digital tools: five browser tools and the brand library." />
+<meta name="description" content="NORDWAY digital tools: six browser tools and the brand library." />
 <link rel="icon" href="ui/favicon.png" />
 <link rel="stylesheet" href="ui/site.css" />
 <!-- Index v2 : moins de texte, mêmes idées — wordmark, sceau interactif + fiche, liste, formats à l'échelle, bandeau coordonnées -->
@@ -26,8 +26,8 @@
   #seal .node { cursor: pointer; outline: none; }
   #seal .hit { fill: transparent; }
   #seal .pin { fill: var(--paper); stroke: var(--ink); stroke-width: 1.4; }
-  #seal .no { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; fill: var(--mute); }
-  #seal .nm { font-family: var(--display); font-size: 24px; letter-spacing: -0.03em; fill: var(--ink); text-transform: uppercase; }
+  #seal .no { font-family: var(--mono); font-size: 11px;fill: var(--mute); }
+  #seal .nm { font-family: var(--display); font-size: 24px;fill: var(--ink); text-transform: uppercase; }
   #seal .node.on .pin { fill: var(--signal); }
   /* la bibliothèque n'est pas un outil : un point plein (les relais du sceau) au lieu d'une case */
   #seal .pin.lib { fill: var(--ink); }
@@ -47,7 +47,7 @@
   .fiche .desc { font-size: 18px; line-height: 1.25; margin-bottom: 18px; }
   .spec { margin: 0 0 20px; border-top: 2px solid var(--line); }
   .spec > div { display: grid; grid-template-columns: 38% minmax(0, 1fr); padding: 9px 0; border-bottom: 1px solid var(--hair); font-family: var(--mono); font-size: 12.5px; }
-  .spec dt { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); }
+  .spec dt { font-size: 11px;text-transform: uppercase; color: var(--mute); }
   .spec dd { margin: 0; }
   .fiche .cta { margin-top: auto; }
   .fiche.swap .f-body, .fiche.swap h2 { animation: swap 0.22s linear; }
@@ -67,7 +67,7 @@
   }
   .list a:hover, .list a.on { background: var(--white); padding-inline: 12px; }
   .list .n { font-family: var(--mono); font-size: 13px; }
-  .list .name { font-size: clamp(26px, 2.6vw, 36px); line-height: 1; letter-spacing: -0.03em; text-transform: uppercase; }
+  .list .name { font-size: clamp(26px, 2.6vw, 36px); line-height: 1;text-transform: uppercase; }
   /* la bibliothèque, à part : un intervalle et son intitulé sous la liste des outils */
   .list .sep { margin-top: 40px; padding-bottom: 8px; border-bottom: 2px solid var(--line); }
   .list .thumb { width: 44px; aspect-ratio: 4 / 5; object-fit: cover; background: var(--panel); }
@@ -93,10 +93,10 @@
 <main>
   <div class="wrap hero">
     <h1 style="margin:0"><span class="mark word" role="img" aria-label="NORDWAY®"></span></h1>
-    <p class="line label ink"><span>Social images, in the browser</span><span>05 tools + library · PNG · MP4 · v1.0</span></p>
+    <p class="line label ink"><span>Social images, in the browser</span><span>06 tools + library · PNG · MP4 · v1.0</span></p>
   </div>
 
-  <!-- le sceau comme navigation : six points, six outils -->
+  <!-- le sceau comme navigation : six points, les six outils (la bibliothèque est dans la liste et l'en-tête) -->
   <div class="wrap index">
     <svg id="seal" viewBox="-330 -300 660 600" role="group" aria-label="Tools on the NORDWAY seal"></svg>
     <article class="fiche" id="fiche" aria-live="polite">
@@ -131,13 +131,15 @@
 
 <script>
 // Un outil de plus : une entrée dans TOOLS (dossier, nom, aperçu 4:5 dans apercu/<dossier>.jpg).
-// Le sceau a six points ; au-delà, la liste reste la référence.
+// Le sceau a six points : seal = sa place (0 à 5, dans le sens des aiguilles d'une montre depuis le haut).
+// Les six places vont aux six outils ; la bibliothèque (Brand assets) n'est que dans la liste, la fiche et l'en-tête.
 const TOOLS = [
-  { dossier: "card-ring", nom: "Card ring", kind: "Poster", desc: "A full-width title and a ring of brand images, turned by your hand.", out: "PNG · MP4", fmt: "4:5 · 9:16 · 1:1 · A4" },
-  { dossier: "image-matrice", nom: "Image matrice", kind: "Viewer", desc: "The brand images as a 2D index, a sphere, a roll, a space or the Mont Blanc.", out: "Live view", fmt: "Full screen" },
-  { dossier: "cairn-generator", nom: "Cairn generator", kind: "Loop", desc: "A pile of stones turning in a perfect loop, under a type layer.", out: "PNG · MP4", fmt: "4:5 · 9:16 · 1:1 · A4" },
-  { dossier: "gradient-body", nom: "Gradient body", kind: "Camera", desc: "Your silhouette leaves a grainy aura, tagged in Signal green.", out: "Live view", fmt: "Full screen" },
-  { dossier: "mockup", nom: "Mockup", kind: "Mockup", desc: "Your image or screen recording in a phone held in silhouette.", out: "PNG · MP4", fmt: "4:5 · 9:16 · 1:1 · A4" },
+  { seal: 0, dossier: "card-ring", nom: "Card ring", kind: "Poster", desc: "A full-width title and a ring of brand images, turned by your hand.", out: "PNG · MP4", fmt: "4:5 · 9:16 · 1:1 · A4" },
+  { seal: 1, dossier: "image-matrice", nom: "Image matrice", kind: "Viewer", desc: "The brand images as a 2D index, a sphere, a roll, a space or the Mont Blanc.", out: "Live view", fmt: "Full screen" },
+  { seal: 2, dossier: "cairn-generator", nom: "Cairn generator", kind: "Loop", desc: "A pile of stones turning in a perfect loop, under a type layer.", out: "PNG · MP4", fmt: "4:5 · 9:16 · 1:1 · A4" },
+  { seal: 3, dossier: "gradient-body", nom: "Gradient body", kind: "Camera", desc: "Your silhouette leaves a grainy aura, tagged in Signal green.", out: "Live view", fmt: "Full screen" },
+  { seal: 4, dossier: "mockup", nom: "Mockup", kind: "Mockup", desc: "Your image or screen recording in a phone held in silhouette.", out: "PNG · MP4", fmt: "4:5 · 9:16 · 1:1 · A4" },
+  { seal: 5, dossier: "type-flyer", nom: "Type flyer", kind: "Poster", desc: "A title from margin to margin, a middle line and a footer: flat black and white, or pressed into a steel plate.", out: "PNG", fmt: "4:5 · 9:16 · 1:1 · A4" },
   { dossier: "brand-assets", nom: "Brand assets", kind: "Library", lib: true, desc: "Every file of the identity, sorted as in the ASSETS folder.", out: "Original files", fmt: "PNG · JPG · MP4 · TTF" },
 ];
 const pad2 = (n) => String(n).padStart(2, "0");
@@ -187,13 +189,15 @@ const laser = el("line", { class: "laser", x1: 0, y1: 0, x2: 0, y2: 0, pathLengt
 el("circle", { cx: 0, cy: 0, r: 5, class: "center" });
 
 const nodes = TOOLS.map((t, i) => {
-  const a = ANG[i];
+  if (t.seal == null) return null;   // pas de place sur le sceau
+  const a = ANG[t.seal];
+  const vertex = IS_VERTEX[t.seal];
   const g = el("a", { class: "node", href: `${t.dossier}/`, "aria-label": `${numOf(i)} ${t.nom}` });
   const [x, y] = P(a);
   el("circle", { class: "hit", cx: x, cy: y, r: 34 }, g);
   if (t.lib) el("circle", { class: "pin lib", cx: x, cy: y, r: 9 }, g);
   else el("rect", { class: "pin", x: x - 7, y: y - 7, width: 14, height: 14 }, g);
-  let [lx, ly] = P(a, IS_VERTEX[i] ? R + TIP + 30 : R + 30);
+  let [lx, ly] = P(a, vertex ? R + TIP + 30 : R + 30);
   const cos = Math.cos(a * Math.PI / 180);
   const anchor = Math.abs(cos) < 0.2 ? "middle" : cos > 0 ? "start" : "end";
   if (a === -90) ly -= 24;
@@ -233,11 +237,15 @@ function select(i) {
   if (i === current) return;
   current = i;
   const t = TOOLS[i];
-  nodes.forEach((n, k) => n.classList.toggle("on", k === i));
+  nodes.forEach((n, k) => n?.classList.toggle("on", k === i));
   rows.forEach((r, k) => r.classList.toggle("on", k === i));
-  const [x, y] = P(ANG[i]);
-  laser.setAttribute("x1", x); laser.setAttribute("y1", y);
-  laser.classList.remove("draw"); void laser.getBBox(); laser.classList.add("draw");
+  // la ligne de visée part du point de l'outil ; un outil hors du sceau n'en a pas
+  laser.style.visibility = t.seal == null ? "hidden" : "";
+  if (t.seal != null) {
+    const [x, y] = P(ANG[t.seal]);
+    laser.setAttribute("x1", x); laser.setAttribute("y1", y);
+    laser.classList.remove("draw"); void laser.getBBox(); laser.classList.add("draw");
+  }
   $("fKind").textContent = t.kind;
   $("fNum").textContent = t.lib ? "" : `${pad2(i + 1)} / ${pad2(N_TOOLS)}`;
   $("fName").textContent = t.nom;
@@ -262,7 +270,10 @@ select(0);
 svg.addEventListener("keydown", (e) => {
   if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
   e.preventDefault();
-  nodes[(current + (e.key === "ArrowRight" ? 1 : -1) + TOOLS.length) % TOOLS.length].focus();
+  // d'un point du sceau au suivant, dans l'ordre des places
+  const onSeal = TOOLS.map((t, i) => i).filter((i) => nodes[i]).sort((a, b) => TOOLS[a].seal - TOOLS[b].seal);
+  const k = Math.max(0, onSeal.indexOf(current));
+  nodes[onSeal[(k + (e.key === "ArrowRight" ? 1 : -1) + onSeal.length) % onSeal.length]].focus();
 });
 </script>
 </body>
