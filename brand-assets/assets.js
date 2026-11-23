@@ -4,7 +4,7 @@ window.NORDWAY_ASSETS = [
   "id": "logo",
   "label": "Logo",
   "folder": "LOGO",
-  "desc": "Wordmark and seal. Keep a clear space equal to the height of the ® around the wordmark.",
+  "desc": "Wordmark and seal.",
   "items": [
    {
     "name": "LOGO_TYPO",
@@ -54,7 +54,7 @@ window.NORDWAY_ASSETS = [
   "id": "campagne",
   "label": "Campaign",
   "folder": "ASSETS/ASSETS CAMPAGNE",
-  "desc": "Four image families: Relief, Signal, Ritual. 4:5, 1080 × 1350.",
+  "desc": "Campaign images, 4:5, 1080 × 1350.",
   "items": [
    {
     "name": "5622",
@@ -300,7 +300,7 @@ window.NORDWAY_ASSETS = [
   "id": "graphics",
   "label": "Graphics",
   "folder": "ASSETS/ASSETS GRAPHICS",
-  "desc": "Coordinates band, marker grid, seal plan, Climber sign.",
+  "desc": "Coordinates band, marker grid, seal plan and Climber sign.",
   "items": [
    {
     "name": "5602",
@@ -392,7 +392,7 @@ window.NORDWAY_ASSETS = [
   "id": "product",
   "label": "Product",
   "folder": "ASSETS/ASSETS PRODUCT",
-  "desc": "X-ray product shots on Glacier, Granite and Night backgrounds.",
+  "desc": "Product shots on Glacier, Granite and Night backgrounds.",
   "items": [
    {
     "name": "1 44",
@@ -484,7 +484,7 @@ window.NORDWAY_ASSETS = [
   "id": "object",
   "label": "Object",
   "folder": "ASSETS/OBJECT",
-  "desc": "Printed objects: the Climber sign in relief.",
+  "desc": "Objects printed with the Climber sign.",
   "items": [
    {
     "name": "5617",
@@ -506,7 +506,7 @@ window.NORDWAY_ASSETS = [
   "id": "video",
   "label": "Motion",
   "folder": "ASSETS/vidéo",
-  "desc": "Short films, 8 to 12 s. The logo only appears at the end, in Signal green.",
+  "desc": "Short videos, 8 to 12 s.",
   "items": [
    {
     "name": "Frame 239",
@@ -555,7 +555,7 @@ window.NORDWAY_ASSETS = [
   "id": "typo",
   "label": "Type",
   "folder": "TYPO",
-  "desc": "Two families, one weight. Nord Pro carries the story, Roboto Mono carries the data.",
+  "desc": "Nord Regular, Nord SemiBold, Nord Mono and Roboto Mono.",
   "items": [
    {
     "name": "Nord_pro_mono",

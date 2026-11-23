@@ -40,7 +40,7 @@ button { font: inherit; color: inherit; letter-spacing: inherit; }
 p { margin: 0; max-width: 62ch; }
 
 .wrap {
-  max-width: 1440px;
+  max-width: 1680px;   /* un peu plus large qu'avant (1440 px) */
   margin: 0 auto;
   padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
   padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
@@ -67,13 +67,13 @@ p { margin: 0; max-width: 62ch; }
 .mark.word.signal { background-image: url("wordmark-signal.png"); }
 .mark.word.paper { background-image: url("wordmark-paper.png"); }
 
-/* ── barre haute : retour / sceau / méta, filet 2 px dessous ── */
+/* ── barre haute : retour / sceau / méta, filet 1 px dessous ── */
 .top {
   position: sticky;
   top: 0;
   z-index: 30;
   background: var(--paper);
-  border-bottom: 2px solid var(--line);
+  border-bottom: 1px solid var(--line);
 }
 .top .wrap {
   display: grid;
@@ -89,11 +89,11 @@ p { margin: 0; max-width: 62ch; }
 /* téléphone : la navigation de section disparaît (la page se lit en défilant), le sceau reste au centre */
 @media (max-width: 760px) { .top nav.end { display: none; } .top .wrap { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); } }
 
-/* méta sous un titre : 4 colonnes, filet 2 px dessus */
+/* méta sous un titre : 4 colonnes, filet 1 px dessus */
 .meta {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-top: 2px solid var(--line);
+  border-top: 1px solid var(--line);
 }
 .meta > div { padding: 12px 12px 0 0; min-width: 0; }
 .meta strong { display: block; margin-top: 4px; font-family: var(--mono); font-weight: 400; font-size: 13px;}
@@ -183,7 +183,7 @@ p { margin: 0; max-width: 62ch; }
 footer.site { margin-top: 96px; }
 footer.site .fine {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   gap: 16px;
   flex-wrap: wrap;
   padding-block: 16px 40px;

@@ -25,19 +25,19 @@ SRC = ROOT / "ASSETS"
 # (dossier dans ASSETS, identifiant court, nom affiché, description)
 FOLDERS = [
     ("LOGO", "logo", "Logo",
-     "Wordmark and seal. Keep a clear space equal to the height of the ® around the wordmark."),
+     "Wordmark and seal."),
     ("ASSETS/ASSETS CAMPAGNE", "campagne", "Campaign",
-     "Four image families: Relief, Signal, Ritual. 4:5, 1080 × 1350."),
+     "Campaign images, 4:5, 1080 × 1350."),
     ("ASSETS/ASSETS GRAPHICS", "graphics", "Graphics",
-     "Coordinates band, marker grid, seal plan, Climber sign."),
+     "Coordinates band, marker grid, seal plan and Climber sign."),
     ("ASSETS/ASSETS PRODUCT", "product", "Product",
-     "X-ray product shots on Glacier, Granite and Night backgrounds."),
+     "Product shots on Glacier, Granite and Night backgrounds."),
     ("ASSETS/OBJECT", "object", "Object",
-     "Printed objects: the Climber sign in relief."),
+     "Objects printed with the Climber sign."),
     ("ASSETS/vidéo", "video", "Motion",
-     "Short films, 8 to 12 s. The logo only appears at the end, in Signal green."),
+     "Short videos, 8 to 12 s."),
     ("TYPO", "typo", "Type",
-     "Two families, one weight. Nord Pro carries the story, Roboto Mono carries the data."),
+     "Nord Regular, Nord SemiBold, Nord Mono and Roboto Mono."),
 ]
 IMAGE_EXT = {".png", ".jpg", ".jpeg", ".webp"}
 VIDEO_EXT = {".mp4", ".mov", ".webm"}
